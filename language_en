@@ -1,0 +1,12 @@
+#Mon Nov 30 01:15:42 EET 2015
+Ask\ for\ single-deck=Please, enter coordinate for single-decker ship\: 
+Ask\ for\ another\ ship=Now place another ship of same class.
+Ask\ for\ 3decker\ end=And now ending coordinate for ship with 3 decks, please\: 
+Ask\ for\ 4decker\ start=Please, enter starting coordinate for ship with 4 decks\: 
+welcome\ text=Welcome in this game\!
+Ask\ for\ 2decker\ end=And now ending coordinate for ship with 2 decks, please\: 
+Ask\ for\ 2decker\ start=Please, enter starting coordinate for ship with 2 decks\: 
+Rules\ of\ placing\ ships=The ships should be placed in a line horizontally or vertically with at least one cell between ships.\nSingle-deck ships occupy one cell. There should be 4 single-deck ships, 3 double-deck ones (2 cells in a line),\n2 triple-deckers (3 cells in a line) and 1 with 4 decks (4 cells in a line).
+Ask\ for\ 3decker\ start=Please, enter starting coordinate for ship with 3 decks\: 
+Show\ input\ format=Let's use coordinates in format "B4".
+Ask\ for\ 4decker\ end=And now ending coordinate for ship with 4 decks, please\: 
