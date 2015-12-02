@@ -56,7 +56,7 @@ public class Field {
         int endY = end[1];
 
         if (Math.abs(startX - endX) != decks ^ Math.abs(startY - endY) != decks) {
-            throw new ShipPlacementException("Wrong width");
+            throw new ShipPlacementException("Wrong size");
         }
 
         boolean xDirection = false;

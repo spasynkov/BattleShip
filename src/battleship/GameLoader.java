@@ -105,12 +105,13 @@ public class GameLoader {
         LANG.put("Ask for another ship", "Now place another ship of same class.");
         LANG.put("Abstract error", "Oops, something bad happens and we don't know why... Could you try again, please?");
 
-        log.write("Saving " + LANG.size() + " language strings in file.");
+        log.write("Saving " + LANG.size() + " language strings in file...");
         Properties propertiesForSave = new Properties();
         for (Map.Entry<String, String> map : LANG.entrySet()) {
             propertiesForSave.setProperty(map.getKey(), (map.getValue()));
         }
         FileOutputStream os = null;
+        log.write("Opening file for save.");
         try {
             os = new FileOutputStream("./language" + "_en");
             propertiesForSave.store(os, null);
@@ -137,9 +138,10 @@ public class GameLoader {
                         "українська".equals(args[0].toLowerCase()))
                     langCode = "_ua";
             }
+            log.write("Loading language \"" + langCode.substring(1) + "\" from file...");
             Properties propertiesFromFile = new Properties();
             FileInputStream is = null;
-            log.write("Loading language \"" + langCode.substring(1) + "\" from file.");
+            log.write("Opening file...");
             try {
                 is = new FileInputStream("./language" + langCode);
                 propertiesFromFile.load(is);
@@ -148,6 +150,7 @@ public class GameLoader {
                     String key = (String) languageStrings.nextElement();
                     LANG.put(key, propertiesFromFile.getProperty(key));
                 }
+                log.write("Ok.");
             } catch (IOException e) {
                 log.write("Failed!\n" + e.getMessage());
                 throw e;
