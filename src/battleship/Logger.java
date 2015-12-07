@@ -10,7 +10,7 @@ import java.util.Date;
 /**
  * Created by spasynkov on 29.11.15.
  */
-public class Logger implements Closeable {
+class Logger implements Closeable {
 
     private static Logger instance = null;
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEEE, d MMMM y HH:mm:ss ('GMT' XXX) : ");

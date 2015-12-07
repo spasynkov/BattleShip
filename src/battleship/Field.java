@@ -3,7 +3,7 @@ package battleship;
 /**
  * Created by spasynkov on 29.11.2015.
  */
-public class Field {
+class Field {
     private final char filledCell = '8';
     private final char emptyCell = ' ';
     private final char[][] field = new char[10][10];

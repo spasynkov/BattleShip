@@ -9,7 +9,7 @@ import java.util.Properties;
 /**
  * Created by spasynkov on 29.11.2015.
  */
-public class GameLoader {
+class GameLoader {
     private static final Map<String, String> LANG = new HashMap<>();
     private static final BufferedReader CONSOLE_READER = new BufferedReader(new InputStreamReader(System.in));
     private static final Logger log = Logger.getInstance();
