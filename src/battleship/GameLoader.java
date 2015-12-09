@@ -7,7 +7,8 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Created by spasynkov on 29.11.2015.
+ * The loader of the game.
+ * Main method is here.
  */
 class GameLoader {
     private static final Map<String, String> LANG = new HashMap<>();
@@ -42,13 +43,13 @@ class GameLoader {
 
     private static void putShips(Field field) {
         System.out.println(LANG.get("Rules of placing ships"));
-        field.drawField();
+        field.draw();
         System.out.println(LANG.get("Show input format"));
         for (int i = 4; i > 0; i--) {
             placeShipByDeckNumber(field, i);
         }
         log.write("All ships are placed by user. Cleaning field...");
-        field.clearField();
+        field.clear();
     }
 
     private static void placeShipByDeckNumber(Field field, int numberOfDecks) {
@@ -86,7 +87,7 @@ class GameLoader {
                     else log.write("Coordinates for " + sNumberOfDecks + "decker: (" + start.toUpperCase() + ").");
                 }
             } while (flag);
-            field.drawField();
+            field.draw();
             if (i != 3) System.out.println(LANG.get("Ask for another ship"));
         }
     }
