@@ -1,11 +1,14 @@
-#Wed Dec 09 18:16:52 EET 2015
+#Sat Dec 12 07:00:36 EET 2015
 Ask\ for\ single-deck=Please, enter coordinate for single-decker ship\: 
 Ask\ for\ end\ point\ part2=\ decks, please\: 
 Ask\ for\ end\ point\ part1=And now ending coordinate for ship with 
 Ask\ for\ another\ ship=Now place another ship of same class.
 welcome\ text=Welcome in this game\!
+Wait\ for\ computer\ ships=Oh, you're so fast\!\nPlease, give some time to your computer with finishing placing his ships.
 Ask\ for\ start\ point\ part2=\ decks\: 
+Fields\ names=\             Your field                         Enemy's field
 Ask\ for\ start\ point\ part1=Please, enter starting coordinate for ship with 
 Rules\ of\ placing\ ships=The ships should be placed in a line horizontally or vertically with at least one cell between ships.\nSingle-deck ships occupy one cell. There should be 4 single-deck ships, 3 double-deck ones (2 cells in a line),\n2 triple-deckers (3 cells in a line) and 1 with 4 decks (4 cells in a line).
+Game\ started=Ok, game is starting right now\!\n\n
 Show\ input\ format=Let's use coordinates in format "B4".
 Abstract\ error=Oops, something bad happens and we don't know why... Could you try again, please?

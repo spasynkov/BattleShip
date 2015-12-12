@@ -8,13 +8,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by spasynkov on 29.11.15.
+ * Logging actions class.
  */
 class Logger implements Closeable {
 
     private static Logger instance = null;
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEEE, d MMMM y HH:mm:ss ('GMT' XXX) : ");
     private static BufferedWriter writer = null;
+
     static {
         try {
             writer = new BufferedWriter(new FileWriter("./game.log", true));
@@ -23,13 +24,16 @@ class Logger implements Closeable {
             e.printStackTrace();
         }
     }
+
     private Logger() {
         if (writer == null) System.exit(1);
     }
 
     public static Logger getInstance() {
-        if (instance == null) instance = new Logger();
-        instance.write("Program started, logger created.");
+        if (instance == null) {
+            instance = new Logger();
+            instance.write("Program started, logger created.");
+        }
         return instance;
     }
 

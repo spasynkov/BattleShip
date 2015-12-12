@@ -6,18 +6,29 @@ import java.util.HashMap;
  * This class will be responsible for controlling each field's logic.
  * As we will have at least 2 instances of this class (player's field and enemy's/computer's field)
  * so this class have both methods for 2 different kinds of logic.
- * I will try to split player's logic and UI's one at 2 different classes... But it will be here now for some time :)
+ * I will try to split computer's logic and UI's one at 2 different classes... But it will be here now for some time :)
  */
 class Field {
     /**
      * How not empty cells (with ships) will look
      */
-    private static final char filledCell = '8';
+    private static final char filledCell = 'O';
 
     /**
      * How empty cells will look
      */
-    private static final char emptyCell = ' ';
+    private static final char emptyCell = '.';
+
+    /**
+     * How will look those cells where it was a hit but was'nt any ships there.
+     * You will get "missed" message when hit those cells.
+     */
+    private static final char missedSign = '*';
+
+    /**
+     * How will look cells with hited ships/decks
+     */
+    private static final char hitedSign = 'X';
 
     /**
      * Battlefield initialisation
@@ -33,10 +44,10 @@ class Field {
      * Default and the only one constructor.
      * The only thing it doing is filling every cells with "-" sign for easier ships placement planning.
      */
-    public Field() {
+    Field() {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                field[i][j] = '-';
+                field[i][j] = emptyCell;
             }
         }
     }
@@ -45,7 +56,7 @@ class Field {
      * Returns {@code String} view of some particular string of the field.
      * Method takes the index of field's string to return.
      */
-    public String getLine(int index) {
+    String getLine(int index) {
         StringBuilder sb = new StringBuilder("|");
         for (int i = 0; i < field[index].length; i++) {
             sb.append(" ").append(field[index][i]).append(" ");
@@ -54,9 +65,23 @@ class Field {
     }
 
     /**
+     * @return String value of filled cell
+     */
+    public static String getFilledCell() {
+        return String.valueOf(filledCell);
+    }
+
+    /**
+     * @return String value of empty cell
+     */
+    public static String getEmptyCell() {
+        return String.valueOf(emptyCell);
+    }
+
+    /**
      * Clears field. Filling every "empty" cell with an "emptyCell" sign;
      */
-    public void clear() {
+    void clear() {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 if (field[i][j] != filledCell) field[i][j] = emptyCell;
@@ -67,7 +92,7 @@ class Field {
     /**
      * Call this if you need to draw full field.
      */
-    public void draw() {
+    void draw() {
         System.out.println("   --------------------------------");
         for (int i = 9; i >= 0; i--) {
             if (i != 9) System.out.print(" ");
@@ -90,7 +115,7 @@ class Field {
      * There is no difference which ones will be grater than other. It will convert it so you don't need to think about this.
      * If coordinates are wrong - it will @throw ShipPlacementException with a short reason message in it.
      */
-    public boolean putShip(int numberOfDecks, String startingCoordinates, String endingCoordinates) throws ShipPlacementException {
+    boolean putShip(int numberOfDecks, String startingCoordinates, String endingCoordinates) throws ShipPlacementException {
         int[] start = getCoordinatesFromString(startingCoordinates);
         int[] end = getCoordinatesFromString(endingCoordinates);
         if (start == null || end == null) return false;
@@ -155,7 +180,7 @@ class Field {
      *
      * If coordinates are wrong - it will @throw ShipPlacementException with a short reason message in it.
      */
-    public boolean putShip(String coordinates) throws ShipPlacementException {
+    boolean putShip(String coordinates) throws ShipPlacementException {
         int[] start = getCoordinatesFromString(coordinates);
         if (start == null) return false;
         checkIfCloseByXY(start[0], start[1]);
@@ -192,17 +217,17 @@ class Field {
      */
     private void surroundWithDots(int x, int y) {
         if (x > 0) {
-            if (y - 1 >= 0 && this.field[y - 1][x - 1] != filledCell) this.field[y - 1][x - 1] = '.';
-            if (this.field[y][x - 1] != filledCell) this.field[y][x - 1] = '.';
-            if (y + 1 < 10 && this.field[y + 1][x - 1] != filledCell) this.field[y + 1][x - 1] = '.';
+            if (y - 1 >= 0 && this.field[y - 1][x - 1] != filledCell) this.field[y - 1][x - 1] = missedSign;
+            if (this.field[y][x - 1] != filledCell) this.field[y][x - 1] = missedSign;
+            if (y + 1 < 10 && this.field[y + 1][x - 1] != filledCell) this.field[y + 1][x - 1] = missedSign;
         }
         if (x < 9) {
-            if (y - 1 >= 0 && this.field[y - 1][x + 1] != filledCell) this.field[y - 1][x + 1] = '.';
-            if (this.field[y][x + 1] != filledCell) this.field[y][x + 1] = '.';
-            if (y + 1 < 10 && this.field[y + 1][x + 1] != filledCell) this.field[y + 1][x + 1] = '.';
+            if (y - 1 >= 0 && this.field[y - 1][x + 1] != filledCell) this.field[y - 1][x + 1] = missedSign;
+            if (this.field[y][x + 1] != filledCell) this.field[y][x + 1] = missedSign;
+            if (y + 1 < 10 && this.field[y + 1][x + 1] != filledCell) this.field[y + 1][x + 1] = missedSign;
         }
-        if (y - 1 >= 0 && this.field[y - 1][x] != filledCell) this.field[y - 1][x] = '.';
-        if (y + 1 < 10 && this.field[y + 1][x] != filledCell) this.field[y + 1][x] = '.';
+        if (y - 1 >= 0 && this.field[y - 1][x] != filledCell) this.field[y - 1][x] = missedSign;
+        if (y + 1 < 10 && this.field[y + 1][x] != filledCell) this.field[y + 1][x] = missedSign;
 
     }
 
