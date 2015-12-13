@@ -61,7 +61,7 @@ class Ship {
     }
 
     /**
-     * Checks if there are still some decks to shoot in
+     * Checks if there are still some decks to gotShooted in
      */
     public boolean isAlive() {
         return safeDecks > 0 ;

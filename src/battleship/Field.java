@@ -1,6 +1,8 @@
 package battleship;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class will be responsible for controlling each field's logic.
@@ -45,6 +47,7 @@ class Field {
      * The only thing it doing is filling every cells with "-" sign for easier ships placement planning.
      */
     Field() {
+        // TODO add getting symbols like . * O X from properties
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 field[i][j] = emptyCell;
@@ -53,29 +56,27 @@ class Field {
     }
 
     /**
-     * Returns {@code String} view of some particular string of the field.
-     * Method takes the index of field's string to return.
+     * Returns {@code char} array with all cells in some particular row of the field.
+     * Method takes the index of field's row to return.
      */
-    String getLine(int index) {
-        StringBuilder sb = new StringBuilder("|");
-        for (int i = 0; i < field[index].length; i++) {
-            sb.append(" ").append(field[index][i]).append(" ");
-        }
-        return sb.append("|").toString();
+    char[] getLine(int row) {
+        char[] result = new char[field[row].length];
+        System.arraycopy(field[row], 0, result, 0, result.length);
+        return result;
     }
 
     /**
-     * @return String value of filled cell
+     * @return char value of filled cell
      */
-    public static String getFilledCell() {
-        return String.valueOf(filledCell);
+    static char getFilledCell() {
+        return filledCell;
     }
 
     /**
-     * @return String value of empty cell
+     * @return char value of empty cell
      */
-    public static String getEmptyCell() {
-        return String.valueOf(emptyCell);
+    static char getEmptyCell() {
+        return emptyCell;
     }
 
     /**
@@ -89,41 +90,20 @@ class Field {
         }
     }
 
-    /**
-     * Call this if you need to draw full field.
-     */
-    void draw() {
-        System.out.println("   --------------------------------");
-        for (int i = 9; i >= 0; i--) {
-            if (i != 9) System.out.print(" ");
-            System.out.print((i + 1) + " |");
-            for (int j = 0; j < 10; j++) {
-                System.out.print(" " + field[i][j] + " ");
-            }
-            System.out.print("|");
-            System.out.println();
-        }
-        System.out.println("   --------------------------------");
-        System.out.println("     A  B  C  D  E  F  G  H  I  J");
+    char getCell(int x, int y) {
+        return field[y][x];
     }
 
     /**
      * This method will check if some ship you're trying to put could be placed. It will return "true" if it's ok.
      * Takes the number of decks of that ship you're trying to put at field and starting coordinates and ending ones.
-     * Coordinates should be in format B4.
      *
-     * There is no difference which ones will be grater than other. It will convert it so you don't need to think about this.
+     * There is no difference what coordinates will be grater than other.
+     * It will convert it so you don't need to think about this.
      * If coordinates are wrong - it will @throw ShipPlacementException with a short reason message in it.
      */
-    boolean putShip(int numberOfDecks, String startingCoordinates, String endingCoordinates) throws ShipPlacementException {
-        int[] start = getCoordinatesFromString(startingCoordinates);
-        int[] end = getCoordinatesFromString(endingCoordinates);
-        if (start == null || end == null) return false;
-        int startX = start[0];
-        int startY = start[1];
-        int endX = end[0];
-        int endY = end[1];
-
+    boolean putShip(int startX, int startY, int numberOfDecks, int endX, int endY) throws ShipPlacementException {
+        if (startX > 9 || startY > 9 || endX > 9 || endY > 9) throw new ShipPlacementException("Coordinates out of range");
         if (Math.abs(startX - endX) != numberOfDecks ^ Math.abs(startY - endY) != numberOfDecks) {
             throw new ShipPlacementException("Wrong size");
         }
@@ -148,7 +128,7 @@ class Field {
             }
 
             /**
-             * Checking before filling field
+             * Checking by every deck before filling field
              */
             for (int i = startCell; i < endCell; i++) {
                 if (xDirection) checkIfCloseByXY(i, startY);
@@ -176,18 +156,15 @@ class Field {
     /**
      * This method will check if some ship you're trying to put could be placed. It will return "true" if it's ok.
      * Works only for ships with 1 deck. Takes coordinates of that ship you're trying to put at field.
-     * Coordinates should be in format B4.
      *
      * If coordinates are wrong - it will @throw ShipPlacementException with a short reason message in it.
      */
-    boolean putShip(String coordinates) throws ShipPlacementException {
-        int[] start = getCoordinatesFromString(coordinates);
-        if (start == null) return false;
-        checkIfCloseByXY(start[0], start[1]);
-        Ship ship = new Ship(start[0], start[1]);
-        ships.put(ship, "(" + start[0] + "," + start[1] + ")");
-        this.field[start[1]][start[0]] = filledCell;
-        surroundWithDots(start[0], start[1]);
+    boolean putShip(int x, int y) throws ShipPlacementException {
+        checkIfCloseByXY(x, y);
+        Ship ship = new Ship(x, y);
+        ships.put(ship, "(" + x + "," + y + ")");
+        this.field[y][x] = filledCell;
+        surroundWithDots(x, y);
         return true;
     }
 
@@ -217,39 +194,66 @@ class Field {
      */
     private void surroundWithDots(int x, int y) {
         if (x > 0) {
-            if (y - 1 >= 0 && this.field[y - 1][x - 1] != filledCell) this.field[y - 1][x - 1] = missedSign;
-            if (this.field[y][x - 1] != filledCell) this.field[y][x - 1] = missedSign;
-            if (y + 1 < 10 && this.field[y + 1][x - 1] != filledCell) this.field[y + 1][x - 1] = missedSign;
+            if (y - 1 >= 0 && this.field[y - 1][x - 1] != filledCell && this.field[y - 1][x - 1] != hitedSign) this.field[y - 1][x - 1] = missedSign;
+            if (this.field[y][x - 1] != filledCell && this.field[y][x - 1] != hitedSign) this.field[y][x - 1] = missedSign;
+            if (y + 1 < 10 && this.field[y + 1][x - 1] != filledCell && this.field[y + 1][x - 1] != hitedSign) this.field[y + 1][x - 1] = missedSign;
         }
         if (x < 9) {
-            if (y - 1 >= 0 && this.field[y - 1][x + 1] != filledCell) this.field[y - 1][x + 1] = missedSign;
-            if (this.field[y][x + 1] != filledCell) this.field[y][x + 1] = missedSign;
-            if (y + 1 < 10 && this.field[y + 1][x + 1] != filledCell) this.field[y + 1][x + 1] = missedSign;
+            if (y - 1 >= 0 && this.field[y - 1][x + 1] != filledCell && this.field[y - 1][x + 1] != hitedSign) this.field[y - 1][x + 1] = missedSign;
+            if (this.field[y][x + 1] != filledCell && this.field[y][x + 1] != hitedSign) this.field[y][x + 1] = missedSign;
+            if (y + 1 < 10 && this.field[y + 1][x + 1] != filledCell && this.field[y + 1][x + 1] != hitedSign) this.field[y + 1][x + 1] = missedSign;
         }
-        if (y - 1 >= 0 && this.field[y - 1][x] != filledCell) this.field[y - 1][x] = missedSign;
-        if (y + 1 < 10 && this.field[y + 1][x] != filledCell) this.field[y + 1][x] = missedSign;
+        if (y - 1 >= 0 && this.field[y - 1][x] != filledCell && this.field[y - 1][x] != hitedSign) this.field[y - 1][x] = missedSign;
+        if (y + 1 < 10 && this.field[y + 1][x] != filledCell && this.field[y + 1][x] != hitedSign) this.field[y + 1][x] = missedSign;
 
     }
 
-    /**
-     * This method will cast coordinates from "B4" view to normal one like "1, 5"
-     * (equals to "B4". horizontal: A->0, B->1, ...; vertical: 1->0, 2->1, ...)
-     * Or will throw an exception if coordinates are extremely wrong.
-     */
-    private int[] getCoordinatesFromString(String sCoordinates) throws ShipPlacementException {
-        int[] result;
-        if (sCoordinates.length() == 2 || sCoordinates.length() == 3) {
-            try {
-                char first = sCoordinates.toUpperCase().charAt(0);
-                int second = Integer.parseInt(sCoordinates.substring(1));
-                if (first >= 'A' && first <= 'J' &&
-                        second > 0 && second < 11) {
-                    result = new int[]{first - 'A', second - 1};
-                } else throw new ShipPlacementException("Coordinates out of range");
-            } catch (NumberFormatException e) {
-                throw new ShipPlacementException("Number format failed");
+    int getShipsNumber() {
+        return ships.size();
+    }
+
+    int[][] getEmptyCells() {
+        ArrayList<int[]> list = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                if (field[j][i] == emptyCell || field[j][i] == filledCell) list.add(new int[]{i, j});
             }
-        } else throw new ShipPlacementException("String too long");
+        }
+        int[][] result = new int[list.size()][2];
+        list.toArray(result);
         return result;
+    }
+
+    int checkDeckAtField(int x, int y) {
+        if (field[y][x] == filledCell) {
+            // hit
+            field[y][x] = hitedSign;
+            HashMap<Ship, String> copy = new HashMap<>(ships);
+            for (Map.Entry<Ship, String> entry : copy.entrySet()) {
+                if (entry.getValue().contains(String.valueOf(x) + "," + String.valueOf(y))) {
+                    Ship ship = entry.getKey();
+                    ship.hit();
+                    if (!ship.isAlive()) {
+                        boolean stop = false;
+                        String s = entry.getValue();
+                        do {
+                            if (s.length() > 4) {
+                                int i = Integer.parseInt(String.valueOf(s.charAt(1)));
+                                int j = Integer.parseInt(String.valueOf(s.charAt(3)));
+                                surroundWithDots(i, j);
+                                s = s.substring(5);
+                            } else stop = true;
+                        } while(!stop);
+                        ships.remove(entry.getKey());
+                        return 2;
+                    }
+                }
+            }
+            return 1;
+        } else if (field[y][x] == emptyCell) {
+            // miss
+            field[y][x] = missedSign;
+            return 0;
+        } else return -1;   // Already
     }
 }

@@ -13,6 +13,7 @@ import java.util.Date;
 class Logger implements Closeable {
 
     private static Logger instance = null;
+    // TODO get date format from properties
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEEE, d MMMM y HH:mm:ss ('GMT' XXX) : ");
     private static BufferedWriter writer = null;
 
@@ -40,6 +41,21 @@ class Logger implements Closeable {
     public void write(String text) {
         try {
             writer.write(getTime() + text + "\n");
+        } catch (IOException e) {
+            System.out.println("There was some error while writing to log.\n");
+            e.printStackTrace();
+        }
+    }
+
+    public void write(String text, Throwable error) {
+        try {
+            writer.write(getTime() + text + "\n");
+            writer.write("\t" + error.toString() + "\n");
+            if (!(error instanceof ShipPlacementException)) {
+                for (StackTraceElement x : error.getStackTrace()) {
+                    writer.write("\t\t" + x.toString() + "\n");
+                }
+            }
         } catch (IOException e) {
             System.out.println("There was some error while writing to log.\n");
             e.printStackTrace();

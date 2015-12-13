@@ -1,7 +1,7 @@
 package battleship;
 
 /**
- * Created by spasynkov on 30.11.15.
+ * Simple exception class to manage placement errors.
  */
 class ShipPlacementException extends Exception{
     public ShipPlacementException(String message) {

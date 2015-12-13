@@ -24,13 +24,24 @@ class GameLoader {
                 thread.join();
                 log.write("Computer's ships placement finished.");
             } catch (InterruptedException e) {
-                e.printStackTrace();
-                log.write("Computer's ships placement was interrupted by something.");
+                log.write("Computer's ships placement was interrupted by something.", e);
                 // TODO add System.exit()
             }
         }
         ui.gameStarted();
-        ui.drawFields(ai.getField());
+
+        int counter = 0;
+        while (ui.isMoreShips() && ai.isMoreShips()) {
+            if (counter++ % 2 == 0) {
+                ui.drawAllFields(ai);
+                ui.makeShoot(ai);
+            }
+            else ai.makeShoot(ui);
+        }
+
+        ui.drawAllFields(ai);
+        if (ai.isMoreShips()) ui.loose();
+        else ui.won();
 
         UserInterface.end();
         log.write("Program finished.");
