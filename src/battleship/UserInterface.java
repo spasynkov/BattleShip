@@ -131,7 +131,7 @@ class UserInterface extends Player {
         synchronized (log) {
             log.write("All ships are placed by user. Cleaning field...");
         }
-        field.clear();
+        clearField();
     }
 
     void placeShipByDeckNumber(int numberOfDecks) {
@@ -157,8 +157,8 @@ class UserInterface extends Player {
                         int[] endXY = getCoordinatesFromString(end);
                         int endX = endXY[0];
                         int endY = endXY[1];
-                        flag = !field.putShip(startX, startY, numberOfDecks, endX, endY);
-                    } else flag = !field.putShip(startX, startY);
+                        flag = !putShipsAtField(startX, startY, numberOfDecks, endX, endY);
+                    } else flag = !putShipsAtField(startX, startY);
                 } catch (IOException e) {
                     synchronized (log) {
                         log.write("Exception while reading from console.", e);
@@ -187,7 +187,7 @@ class UserInterface extends Player {
     }
 
     int beingAttacked(int x, int y) {
-        int result = field.checkDeckAtField(x, y);
+        int result = checkDeckAtField(x, y);
         System.out.print("Computer shoots at: (" + (char)('A' + x) + (y + 1) + ")... ");
         log.write("Computer shoots at: (" + (char)('A' + x) + (y + 1) + ").");
         if (result == 0) {
@@ -233,7 +233,7 @@ class UserInterface extends Player {
             } catch (Exception e) {
                 log.write("There was an error while getting user's coordinates for next shoot", e);
             }
-            if (x >= 0 && enemy.getCell(x, y) != Field.getEmptyCell()) {
+            if (x >= 0 && isAvailableForShoot(enemy.getCell(x, y))) {
                 System.out.println("You already shoot this cell. Try another one.");
                 x = -1;
             }
@@ -307,7 +307,7 @@ class UserInterface extends Player {
             if (i != 9) System.out.print(" ");
             System.out.print((i + 1) + " |");
             for (int j = 0; j < 10; j++) {
-                System.out.print(" " + field.getCell(j, i) + " ");
+                System.out.print(" " + getCell(j, i) + " ");
             }
             System.out.print("|");
             System.out.println();
@@ -326,7 +326,7 @@ class UserInterface extends Player {
             StringBuilder sb = new StringBuilder();
             sb.append(number).append(" |");
             for (int j = 0; j < 10; j++) {
-                sb.append(" ").append(field.getCell(j, i)).append(" ");
+                sb.append(" ").append(getCell(j, i)).append(" ");
             }
             sb.append("| ").append(number).append(" |");
             for (int j = 0; j < 10; j++) {

@@ -34,7 +34,7 @@ class MachineLogic extends Player implements Runnable {
         synchronized (log) {
             log.write("All computer's ships were placed. Cleaning field...");
         }
-        field.clear();
+        clearField();
     }
 
     @Override
@@ -63,8 +63,8 @@ class MachineLogic extends Player implements Runnable {
 
                 try {
                     if (numberOfDecks != 1) {
-                        flag = !field.putShip(startX, startY, numberOfDecks, endX, endY);
-                    } else flag = !field.putShip(startX, startY);
+                        flag = !putShipsAtField(startX, startY, numberOfDecks, endX, endY);
+                    } else flag = !putShipsAtField(startX, startY);
                 } catch (ShipPlacementException e) {
                     // ok, we cant place ship here. let's try again
                 } catch (Exception e) {
@@ -103,6 +103,6 @@ class MachineLogic extends Player implements Runnable {
 
     @Override
     int beingAttacked(int x, int y) {
-        return field.checkDeckAtField(x, y);
+        return checkDeckAtField(x, y);
     }
 }

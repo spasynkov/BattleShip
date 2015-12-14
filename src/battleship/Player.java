@@ -22,7 +22,7 @@ abstract class Player {
         this.name = name;
     }
 
-    protected String getName() {
+    protected final String getName() {
         return name;
     }
 
@@ -30,14 +30,18 @@ abstract class Player {
         if (name != null && !name.isEmpty()) this.name = name;
     }
 
-    protected char getCell(int x, int y) {
+    protected final char getCell(int x, int y) {
         char result = field.getCell(x, y);
         if (result == Field.getFilledCell()) result = Field.getEmptyCell();
         return result;
     }
 
-    protected int[][] getEmptyCells() {
+    protected final int[][] getEmptyCells() {
         return field.getEmptyCells();
+    }
+
+    protected final boolean isAvailableForShoot(char symbolInCell) {
+        return symbolInCell == Field.getEmptyCell();
     }
 
     protected final int getTheLongestStreak() {
@@ -65,6 +69,22 @@ abstract class Player {
     abstract void placeShips();
 
     abstract void placeShipByDeckNumber(int numberOfDecks);
+
+    protected final boolean putShipsAtField(int startX, int startY, int numberOfDecks, int endX, int endY) throws ShipPlacementException {
+        return field.putShip(startX, startY, numberOfDecks, endX, endY);
+    }
+
+    protected final boolean putShipsAtField(int startX, int startY) throws ShipPlacementException {
+        return field.putShip(startX, startY);
+    }
+
+    protected final void clearField() {
+        field.clear();
+    }
+
+    protected final int checkDeckAtField(int x, int y) {
+        return field.checkDeckAtField(x, y);
+    }
 
     protected final boolean isMoreShips() {
         return field.getShipsNumber() > 0;
