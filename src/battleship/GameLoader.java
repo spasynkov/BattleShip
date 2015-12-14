@@ -40,8 +40,8 @@ class GameLoader {
         }
 
         ui.drawAllFields(ai);
-        if (ai.isMoreShips()) ui.loose();
-        else ui.won();
+        if (ui.isMoreShips()) ui.won();
+        else ui.loose();
 
         UserInterface.end();
         log.write("Program finished.");

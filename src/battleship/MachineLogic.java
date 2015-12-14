@@ -5,17 +5,29 @@ import java.util.Random;
 /**
  * This class contains methods for implementation some computer's logic in this game.
  */
-class MachineLogic implements Runnable {
-    private final Field field = new Field();
-    private static final Logger log = Logger.getInstance();
+class MachineLogic extends Player implements Runnable {
     private static final Random random = new Random();
+
+    MachineLogic() {
+        this("Computer");
+    }
+
+    MachineLogic(String name) {
+        super(name);
+    }
+
+    @Override
+    protected void setName(String name) {
+        if (name != null && !name.isEmpty()) super.setName(name);
+    }
 
     @Override
     public void run() {
         placeShips();
     }
 
-    private void placeShips() {
+    @Override
+    protected void placeShips() {
         for (int i = 4; i > 0; i--) {
             placeShipByDeckNumber(i);
         }
@@ -25,7 +37,8 @@ class MachineLogic implements Runnable {
         field.clear();
     }
 
-    private void placeShipByDeckNumber(int numberOfDecks) {
+    @Override
+    void placeShipByDeckNumber(int numberOfDecks) {
         for (int i = numberOfDecks - 1; i < 4; i++) {   // for each ship of this type (with same number of decks)
             boolean flag = true;
             String start, end = "";
@@ -69,26 +82,17 @@ class MachineLogic implements Runnable {
         }
     }
 
-    char getCell(int x, int y) {
-        char result = field.getCell(x, y);
-        if (result == Field.getFilledCell()) result = Field.getEmptyCell();
-        return result;
-    }
-
-    boolean isMoreShips() {
-        return field.getShipsNumber() > 0;
-    }
-
-    public void makeShoot(UserInterface user) {
+    @Override
+    void makeShoot(Player enemy) {
         int x, y;
         boolean repeat;
         do {
-            if (!user.isMoreShips()) break;
-            int[][] cells = user.getEmptyCells();
+            if (!enemy.isMoreShips()) break;
+            int[][] cells = enemy.getEmptyCells();
             int cell = random.nextInt(cells.length);
             x = cells[cell][0];
             y = cells[cell][1];
-            repeat = user.gotShooted(x, y);
+            repeat = enemy.beingAttacked(x, y) != 0;
             try {
                 Thread.sleep(2000L);
             } catch (InterruptedException e) {
@@ -97,7 +101,8 @@ class MachineLogic implements Runnable {
         } while (repeat);
     }
 
-    int shoot(int x, int y) {
+    @Override
+    int beingAttacked(int x, int y) {
         return field.checkDeckAtField(x, y);
     }
 }

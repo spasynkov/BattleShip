@@ -9,18 +9,22 @@ import java.util.Properties;
 /**
  * This class is responsible for interaction with a user using console.
  */
-class UserInterface {
-    private final Field field = new Field();
-    private static final Logger log = Logger.getInstance();
+class UserInterface extends Player {
     private static final Map<String, String> LANG = new HashMap<>();
     private static final BufferedReader CONSOLE_READER = new BufferedReader(new InputStreamReader(System.in));
 
-    private int theLongestStreak = 0;
-    private int theNumberOfMovesUserDid = 0;
+    UserInterface() {
+        super();
+    }
 
-    public UserInterface(String[] args) {
+    UserInterface(String name, String[] args) {
+        super(name);
         //createDefaultLanguagePack();
         loadLanguage(args);
+    }
+
+    UserInterface(String[] args){
+        this("User", args);
     }
 
     private static void createDefaultLanguagePack() {
@@ -130,7 +134,7 @@ class UserInterface {
         field.clear();
     }
 
-    private void placeShipByDeckNumber(int numberOfDecks) {
+    void placeShipByDeckNumber(int numberOfDecks) {
         String sNumberOfDecks = String.valueOf(numberOfDecks);
         if (numberOfDecks == 1) sNumberOfDecks = "single-";
         String start = null;
@@ -182,6 +186,95 @@ class UserInterface {
         }
     }
 
+    int beingAttacked(int x, int y) {
+        int result = field.checkDeckAtField(x, y);
+        System.out.print("Computer shoots at: (" + (char)('A' + x) + (y + 1) + ")... ");
+        log.write("Computer shoots at: (" + (char)('A' + x) + (y + 1) + ").");
+        if (result == 0) {
+            System.out.println("But it missed. Your turn.");
+            log.write("Computer misses.");
+            return result;
+        }
+        if (result > 0) {
+            if (result == 1) {
+                System.out.println("Computer hits your ship.");
+                log.write("Computer hits ship.");
+                return result;
+            }
+            if (result == 2) {
+                System.out.println("Computer killed your ship.");
+                log.write("Computer kills ship.");
+                return result;
+            }
+        }
+        if (result == -1) System.out.println("Computer already hit this cell. It should choose another one.");
+        return result;
+    }
+
+    void makeShoot(Player enemy) {
+        // TODO replace hardcoded language strings
+        int x = -1, y = -1;
+        int repeat = 1;
+        incrementTheNumberOfMovesPlayerDid();
+        int cycleCounter = 0;
+        do {
+            if (!enemy.isMoreShips()) break;
+            cycleCounter++;
+            if (x >= 0) drawAllFields(enemy);
+            System.out.print("Enter coordinates for shoot: ");
+            String sCoordinates = "";
+            try {
+                sCoordinates = CONSOLE_READER.readLine();
+                int[] coordinates = getCoordinatesFromString(sCoordinates);
+                x = coordinates[0];
+                y = coordinates[1];
+            } catch (ShipPlacementException e) {
+                log.write("User input had bad coordinates for shoot: " + sCoordinates, e);
+            } catch (Exception e) {
+                log.write("There was an error while getting user's coordinates for next shoot", e);
+            }
+            if (x >= 0 && enemy.getCell(x, y) != Field.getEmptyCell()) {
+                System.out.println("You already shoot this cell. Try another one.");
+                x = -1;
+            }
+            if (x >= 0) {
+                repeat = enemy.beingAttacked(x, y);
+                log.write("User shoots: (" + (char)('A' + x) + (y + 1) + ").");
+                switch (repeat) {
+                    case -1 : {
+                        System.out.println("You already shoot this cell. Try another one.");
+                        log.write("User already shoot this cell.");
+                        break;
+                    }
+                    case 0 : {
+                        System.out.println("You missed. Computer's turn.");
+                        log.write("User misses.");
+                        break;
+                    }
+                    case 1 : {
+                        System.out.println("You hit computer's ship! Shoot again!");
+                        log.write("User hits a ship.");
+                        break;
+                    }
+                    case 2 : {
+                        System.out.println("Great! You've just killed computer's ship!");
+                        log.write("User kills computer's ship.");
+                        break;
+                    }
+                }
+            }
+        } while (repeat != 0);
+        if (cycleCounter > getTheLongestStreak()) setTheLongestStreak(cycleCounter);
+    }
+
+    protected void won() {
+        super.won();
+        // TODO replace hardcoded language strings
+        System.out.println("You won!");
+        System.out.println("You did it in " + getTheNumberOfMovesPlayerDid() + " moves.");
+        System.out.println("The longest streak of successful hits you did is " + getTheLongestStreak() + " hits.");
+    }
+
     /**
      * This method will cast coordinates from "B4" view to normal one like "1, 5"
      * (equals to "B4". horizontal: A->0, B->1, ...; vertical: 1->0, 2->1, ...)
@@ -223,7 +316,7 @@ class UserInterface {
         System.out.println("     A  B  C  D  E  F  G  H  I  J");
     }
 
-    void drawAllFields(MachineLogic enemy) {
+    void drawAllFields(Player enemy) {
         System.out.println(LANG.get("Fields names"));
         System.out.println("   --------------------------------    --------------------------------");
         for (int i = 9; i >= 0; i--) {
@@ -254,109 +347,16 @@ class UserInterface {
         System.out.println(LANG.get("Game started"));
     }
 
-    boolean isMoreShips() {
-        return field.getShipsNumber() > 0;
-    }
-
-    int[][] getEmptyCells() {
-        return field.getEmptyCells();
-    }
-
-    boolean gotShooted(int x, int y) {
-        int result = field.checkDeckAtField(x, y);
-        System.out.print("Computer shoots at: (" + (char)('A' + x) + (y + 1) + ")... ");
-        log.write("Computer shoots at: (" + (char)('A' + x) + (y + 1) + ").");
-        if (result == 0) {
-            System.out.println("But it missed. Your turn.");
-            log.write("Computer misses.");
-            return false;
-        }
-        if (result > 0) {
-            if (result == 1) {
-                System.out.println("Computer hits your ship.");
-                log.write("Computer hits ship.");
-            }
-            if (result == 2) {
-                System.out.println("Computer killed your ship.");
-                log.write("Computer kills ship.");
-            }
-        }
-        if (result == -1) System.out.println("Computer already hit this cell. It should choose another one.");
-        return true;
-    }
-
-    void makeShoot(MachineLogic enemy) {
-        int x = -1, y = -1;
-        int repeat = 1;
-        theNumberOfMovesUserDid++;
-        int cycleCounter = 0;
-        do {
-            if (!enemy.isMoreShips()) break;
-            cycleCounter++;
-            if (x >= 0) drawAllFields(enemy);
-            System.out.print("Enter coordinates for shoot: ");
-            String sCoordinates = "";
-            try {
-                sCoordinates = CONSOLE_READER.readLine();
-                int[] coordinates = getCoordinatesFromString(sCoordinates);
-                x = coordinates[0];
-                y = coordinates[1];
-            } catch (ShipPlacementException e) {
-                log.write("User input had bad coordinates for shoot: " + sCoordinates, e);
-            } catch (Exception e) {
-                log.write("There was an error while getting user's coordinates for next shoot", e);
-            }
-            if (x >= 0 && enemy.getCell(x, y) != Field.getEmptyCell()) {
-                System.out.println("You already shoot this cell. Try another one.");
-                x = -1;
-            }
-            if (x >= 0) {
-                repeat = enemy.shoot(x, y);
-                log.write("User shoots: (" + (char)('A' + x) + (y + 1) + ").");
-                switch (repeat) {
-                    case -1 : {
-                        System.out.println("You already shoot this cell. Try another one.");
-                        log.write("User already shoot this cell.");
-                        break;
-                    }
-                    case 0 : {
-                        System.out.println("You missed. Computer's turn.");
-                        log.write("User misses.");
-                        break;
-                    }
-                    case 1 : {
-                        System.out.println("You hit computer's ship! Shoot again!");
-                        log.write("User hits a ship.");
-                        break;
-                    }
-                    case 2 : {
-                        System.out.println("Great! You've just killed computer's ship!");
-                        log.write("User kills computer's ship.");
-                        break;
-                    }
-                }
-            }
-        } while (repeat != 0);
-        if (cycleCounter > theLongestStreak) theLongestStreak = cycleCounter;
-    }
-
-    public void won() {
-        System.out.println("You won!");
-        log.write("User won. Moves = " + theNumberOfMovesUserDid + ", the longest streak = " + theLongestStreak);
-        System.out.println("You did it in " + theNumberOfMovesUserDid + " moves.");
-        System.out.println("The longest streak of successful hits you did is " + theLongestStreak + " hits.");
-    }
-
     public void loose() {
-        System.out.println("You loose.");
-        log.write("Computer won. User moves = " + theNumberOfMovesUserDid + ", the longest streak = " + theLongestStreak);
-        System.out.println("You did only " + theNumberOfMovesUserDid + " moves.");
-        System.out.println("The longest streak of successful hits you did is " + theLongestStreak + " hits.");
+        // TODO replace hardcoded language strings
+        System.out.println(getName() + " loose.");
+        log.write("User \'" + getName() + "\' loose. User moves = " + getTheNumberOfMovesPlayerDid() + ", the longest streak = " + getTheLongestStreak());
+        System.out.println("You did only " + getTheNumberOfMovesPlayerDid() + " moves.");
+        System.out.println("The longest streak of successful hits you did is " + getTheLongestStreak() + " hits.");
 
     }
 
     static void end() {
-        BattleshipUtils.closeStream(CONSOLE_READER);
+        closeStream(CONSOLE_READER);
     }
-
 }
