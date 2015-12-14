@@ -13,12 +13,7 @@ class MachineLogic extends Player implements Runnable {
     }
 
     MachineLogic(String name) {
-        super(name);
-    }
-
-    @Override
-    protected void setName(String name) {
-        if (name != null && !name.isEmpty()) super.setName(name);
+        if (name != null && !name.isEmpty()) setName(name);
     }
 
     @Override

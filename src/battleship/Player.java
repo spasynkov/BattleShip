@@ -3,16 +3,21 @@ package battleship;
 import java.io.Closeable;
 
 /**
- * Abstract class that describes some players logic.
+ * Abstract class that describes some player's logic.
  * UserInterface and MachineLogic inherits this class.
  */
 abstract class Player {
     private String name;
+    private int theLongestStreak = 0;
+    private int theNumberOfMovesPlayerDid = 0;
+
     protected static final Logger log = Logger.getInstance();
     protected final Field field = new Field();
 
-    private int theLongestStreak = 0;
-    private int theNumberOfMovesPlayerDid = 0;
+    abstract void placeShips();
+    abstract void placeShipByDeckNumber(int numberOfDecks);
+    abstract int beingAttacked(int x, int y);
+    abstract void makeShoot(Player enemy);
 
     protected Player() {
         super();
@@ -26,7 +31,7 @@ abstract class Player {
         return name;
     }
 
-    protected void setName(String name) {
+    protected final void setName(String name) {
         if (name != null && !name.isEmpty()) this.name = name;
     }
 
@@ -66,10 +71,6 @@ abstract class Player {
         theNumberOfMovesPlayerDid++;
     }
 
-    abstract void placeShips();
-
-    abstract void placeShipByDeckNumber(int numberOfDecks);
-
     protected final boolean putShipsAtField(int startX, int startY, int numberOfDecks, int endX, int endY) throws ShipPlacementException {
         return field.putShip(startX, startY, numberOfDecks, endX, endY);
     }
@@ -89,10 +90,6 @@ abstract class Player {
     protected final boolean isMoreShips() {
         return field.getShipsNumber() > 0;
     }
-
-    abstract int beingAttacked(int x, int y);
-
-    abstract void makeShoot(Player enemy);
 
     protected void won() {
         log.write("User won. Moves = " + theNumberOfMovesPlayerDid + ", the longest streak = " + theLongestStreak);

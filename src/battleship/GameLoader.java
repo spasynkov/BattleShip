@@ -9,7 +9,7 @@ class GameLoader {
 
     public static void main(String[] args) {
         UserInterface ui = new UserInterface(args);
-        MachineLogic ai = new MachineLogic();
+        MachineLogic ai = new MachineLogic(ui.getDesirableComputerName());
 
         log.write("Placing computer's ships by running a new thread.");
         Thread thread = new Thread(ai, "Placing ships by computer");

@@ -13,8 +13,12 @@ class UserInterface extends Player {
     private static final Map<String, String> LANG = new HashMap<>();
     private static final BufferedReader CONSOLE_READER = new BufferedReader(new InputStreamReader(System.in));
 
+    private String enemyName;
+
     UserInterface() {
         super();
+        //createDefaultLanguagePack();
+        loadLanguage(null);
     }
 
     UserInterface(String name, String[] args) {
@@ -25,6 +29,18 @@ class UserInterface extends Player {
 
     UserInterface(String[] args){
         this("User", args);
+        // TODO hardcoded strings
+        String name;
+        System.out.println(LANG.get("welcome text"));
+        try {
+            System.out.print("Enter your name (or leave it blank): ");
+            name = CONSOLE_READER.readLine();
+            if (name != null && !name.isEmpty()) setName(name);
+            System.out.println("Enter opponent's name (or leave it blank): ");
+            enemyName = CONSOLE_READER.readLine();
+        } catch (Exception e) {
+            log.write("Error while reading user/computer name.", e);
+        }
     }
 
     private static void createDefaultLanguagePack() {
@@ -119,6 +135,10 @@ class UserInterface extends Player {
                 BattleshipUtils.closeStream(is);
             }
         }
+    }
+
+    String getDesirableComputerName() {
+        return !enemyName.isEmpty() ? enemyName : null;
     }
 
     void placeShips() {
@@ -317,7 +337,7 @@ class UserInterface extends Player {
     }
 
     void drawAllFields(Player enemy) {
-        System.out.println(LANG.get("Fields names"));
+        System.out.println(LANG.get("Fields names1" + enemy.getName() + "Fields names2"));
         System.out.println("   --------------------------------    --------------------------------");
         for (int i = 9; i >= 0; i--) {
             String number;
