@@ -23,7 +23,7 @@ class UserInterface extends Player {
 
     UserInterface(String name, String[] args) {
         super(name);
-        //createDefaultLanguagePack();
+        createDefaultLanguagePack();
         loadLanguage(args);
     }
 
@@ -36,8 +36,9 @@ class UserInterface extends Player {
             System.out.print("Enter your name (or leave it blank): ");
             name = CONSOLE_READER.readLine();
             if (name != null && !name.isEmpty()) setName(name);
-            System.out.println("Enter opponent's name (or leave it blank): ");
+            System.out.print("Enter opponent's name (or leave it blank): ");
             enemyName = CONSOLE_READER.readLine();
+            System.out.println("Ok.");
         } catch (Exception e) {
             log.write("Error while reading user/computer name.", e);
         }
@@ -57,7 +58,8 @@ class UserInterface extends Player {
         LANG.put("Ask for another ship", "Now place another ship of same class.");
         LANG.put("Abstract error", "Oops, something bad happens and we don't know why... Could you try again, please?");
         LANG.put("Wait for computer ships", "Oh, you're so fast!\nPlease, give some time to your computer with finishing placing his ships.");
-        LANG.put("Fields names", "             Your field                         Enemy's field");
+        LANG.put("Fields names1", "             Your field                         ");
+        LANG.put("Fields names2", "\'s field");
         LANG.put("Game started", "Ok, game is starting right now!\n\n");
 
         log.write("Saving " + LANG.size() + " language strings in file...");
@@ -207,9 +209,10 @@ class UserInterface extends Player {
     }
 
     int beingAttacked(int x, int y) {
+        // TODO hardcoded strings
         int result = checkDeckAtField(x, y);
-        System.out.print("Computer shoots at: (" + (char)('A' + x) + (y + 1) + ")... ");
-        log.write("Computer shoots at: (" + (char)('A' + x) + (y + 1) + ").");
+        System.out.print("Computer shoots at: " + (char)('A' + x) + (y + 1) + "... ");
+        log.write("Computer shoots at: " + (char)('A' + x) + (y + 1) + ".");
         if (result == 0) {
             System.out.println("But it missed. Your turn.");
             log.write("Computer misses.");
@@ -253,16 +256,16 @@ class UserInterface extends Player {
             } catch (Exception e) {
                 log.write("There was an error while getting user's coordinates for next shoot", e);
             }
-            if (x >= 0 && isAvailableForShoot(enemy.getCell(x, y))) {
+            if (x >= 0 && !isAvailableForShoot(enemy.getCell(x, y))) {
                 System.out.println("You already shoot this cell. Try another one.");
                 x = -1;
             }
             if (x >= 0) {
                 repeat = enemy.beingAttacked(x, y);
-                log.write("User shoots: (" + (char)('A' + x) + (y + 1) + ").");
+                log.write("User shoots: " + (char)('A' + x) + (y + 1) + ".");
                 switch (repeat) {
                     case -1 : {
-                        System.out.println("You already shoot this cell. Try another one.");
+                        System.out.println("You already shoot this cell1. Try another one.");
                         log.write("User already shoot this cell.");
                         break;
                     }
@@ -337,7 +340,7 @@ class UserInterface extends Player {
     }
 
     void drawAllFields(Player enemy) {
-        System.out.println(LANG.get("Fields names1" + enemy.getName() + "Fields names2"));
+        System.out.println(LANG.get("Fields names1") + enemy.getName() + LANG.get("Fields names2"));
         System.out.println("   --------------------------------    --------------------------------");
         for (int i = 9; i >= 0; i--) {
             String number;
@@ -350,7 +353,7 @@ class UserInterface extends Player {
             }
             sb.append("| ").append(number).append(" |");
             for (int j = 0; j < 10; j++) {
-                sb.append(" ").append(enemy.getCell(j, i)).append(" ");
+                sb.append(" ").append(enemy.getCellSafe(j, i)).append(" ");
             }
             sb.append("|");
             System.out.println(sb);

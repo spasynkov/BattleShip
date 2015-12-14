@@ -36,6 +36,9 @@ abstract class Player {
     }
 
     protected final char getCell(int x, int y) {
+        return field.getCell(x, y);
+    }
+    protected final char getCellSafe(int x, int y) {
         char result = field.getCell(x, y);
         if (result == Field.getFilledCell()) result = Field.getEmptyCell();
         return result;
@@ -46,7 +49,7 @@ abstract class Player {
     }
 
     protected final boolean isAvailableForShoot(char symbolInCell) {
-        return symbolInCell == Field.getEmptyCell();
+        return (symbolInCell == Field.getEmptyCell() || symbolInCell == Field.getFilledCell());
     }
 
     protected final int getTheLongestStreak() {
