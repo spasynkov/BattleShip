@@ -4,6 +4,19 @@ package battleship;
  * The loader of the game.
  * Main method is here.
  */
+// todo: add comments
+// todo: add loggers levels
+// todo: add names in messages
+// todo: add statusbars
+// todo: add statistics (time + hits efficiency)
+// todo: add default properties opening
+// todo: add splitter's signs
+// todo: add other then ABCDEFGHIJ strings
+// todo: add different fields sizes and ships number
+// todo: incapsulate getCells
+// todo: add languages
+// todo: play with comp against comp
+// todo: int -> byte
 class GameLoader {
     private static final Logger log = Logger.getInstance();
 

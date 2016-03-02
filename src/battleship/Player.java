@@ -38,6 +38,7 @@ abstract class Player {
     protected final char getCell(int x, int y) {
         return field.getCell(x, y);
     }
+
     protected final char getCellSafe(int x, int y) {
         char result = field.getCell(x, y);
         if (result == Field.getFilledCell()) result = Field.getEmptyCell();
