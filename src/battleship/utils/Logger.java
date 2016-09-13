@@ -1,4 +1,6 @@
-package battleship;
+package battleship.utils;
+
+import battleship.ShipPlacementException;
 
 import java.io.BufferedWriter;
 import java.io.Closeable;
@@ -10,11 +12,11 @@ import java.util.Date;
 /**
  * Logging actions class.
  */
-class Logger implements Closeable {
+public class Logger implements Closeable {
 
-    private static Logger instance = null;
     // TODO get date format from properties
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEEE, d MMMM y HH:mm:ss ('GMT' XXX) : ");
+    private static Logger instance = null;
     private static BufferedWriter writer = null;
 
     static {
@@ -33,7 +35,7 @@ class Logger implements Closeable {
     public static Logger getInstance() {
         if (instance == null) {
             instance = new Logger();
-            instance.write("Program started, logger created.");
+            instance.write("Program started, log created.");
         }
         return instance;
     }

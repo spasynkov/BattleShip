@@ -1,4 +1,7 @@
-package battleship;
+package battleship.models;
+
+import battleship.ShipPlacementException;
+import battleship.service.ShipService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +13,7 @@ import java.util.Map;
  * so this class have both methods for 2 different kinds of logic.
  * I will try to split computer's logic and UI's one at 2 different classes... But it will be here now for some time :)
  */
-class Field {
+public class Field {
     /**
      * How not empty cells (with ships) will look
      */
@@ -46,13 +49,27 @@ class Field {
      * Default and the only one constructor.
      * The only thing it doing is filling every cells with "-" sign for easier ships placement planning.
      */
-    Field() {
+    public Field() {
         // TODO add getting symbols like . * O X from properties
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 field[i][j] = emptyCell;
             }
         }
+    }
+
+    /**
+     * @return char value of filled cell
+     */
+    public static char getFilledCell() {
+        return filledCell;
+    }
+
+    /**
+     * @return char value of empty cell
+     */
+    public static char getEmptyCell() {
+        return emptyCell;
     }
 
     /**
@@ -66,23 +83,9 @@ class Field {
     }
 
     /**
-     * @return char value of filled cell
-     */
-    static char getFilledCell() {
-        return filledCell;
-    }
-
-    /**
-     * @return char value of empty cell
-     */
-    static char getEmptyCell() {
-        return emptyCell;
-    }
-
-    /**
      * Clears field. Filling every "empty" cell with an "emptyCell" sign;
      */
-    void clear() {
+    public void clear() {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 if (field[i][j] != filledCell) field[i][j] = emptyCell;
@@ -90,7 +93,7 @@ class Field {
         }
     }
 
-    char getCell(int x, int y) {
+    public char getCell(int x, int y) {
         return field[y][x];
     }
 
@@ -102,7 +105,7 @@ class Field {
      * It will convert it so you don't need to think about this.
      * If coordinates are wrong - it will @throw ShipPlacementException with a short reason message in it.
      */
-    boolean putShip(int startX, int startY, int numberOfDecks, int endX, int endY) throws ShipPlacementException {
+    public boolean putShip(int startX, int startY, int numberOfDecks, int endX, int endY) throws ShipPlacementException {
         if (startX > 9 || startY > 9 || endX > 9 || endY > 9) throw new ShipPlacementException("Coordinates out of range");
         if (Math.abs(startX - endX) != numberOfDecks ^ Math.abs(startY - endY) != numberOfDecks) {
             throw new ShipPlacementException("Wrong size");
@@ -127,7 +130,7 @@ class Field {
                 endCell = startCell + numberOfDecks;
             }
 
-            /**
+            /*
              * Checking by every deck before filling field
              */
             for (int i = startCell; i < endCell; i++) {
@@ -135,11 +138,11 @@ class Field {
                 else checkIfCloseByXY(startX, i);
             }
 
-            /**
+            /*
              * Adding new ship to list and filling field with dots and 8's
              */
-            Ship ship = new Ship(Math.min(startX, endX), Math.min(startY, endY), numberOfDecks, Math.max(startX, endX), Math.max(startY, endY));
-            int[][] coordinates = ship.getCoordinates();
+            Ship ship = ShipService.placeShip(Math.min(startX, endX), Math.min(startY, endY), numberOfDecks, Math.max(startX, endX), Math.max(startY, endY));
+            int[][] coordinates = ShipService.getCoordinatesOfTheShip(ship);
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < numberOfDecks; i++) {
                 int x = coordinates[i][0];
@@ -159,9 +162,9 @@ class Field {
      *
      * If coordinates are wrong - it will @throw ShipPlacementException with a short reason message in it.
      */
-    boolean putShip(int x, int y) throws ShipPlacementException {
+    public boolean putShip(int x, int y) throws ShipPlacementException {
         checkIfCloseByXY(x, y);
-        Ship ship = new Ship(x, y);
+        Ship ship = ShipService.placeShip(x, y);
         ships.put(ship, "(" + x + "," + y + ")");
         this.field[y][x] = filledCell;
         surroundWithDots(x, y);
@@ -208,11 +211,11 @@ class Field {
 
     }
 
-    int getShipsNumber() {
+    public int getShipsNumber() {
         return ships.size();
     }
 
-    int[][] getEmptyCells() {
+    public int[][] getEmptyCells() {
         ArrayList<int[]> list = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
@@ -224,7 +227,7 @@ class Field {
         return result;
     }
 
-    int checkDeckAtField(int x, int y) {
+    public int checkDeckAtField(int x, int y) {
         if (field[y][x] == filledCell) {
             // hit
             field[y][x] = hitedSign;
@@ -232,8 +235,8 @@ class Field {
             for (Map.Entry<Ship, String> entry : copy.entrySet()) {
                 if (entry.getValue().contains(String.valueOf(x) + "," + String.valueOf(y))) {
                     Ship ship = entry.getKey();
-                    ship.hit();
-                    if (!ship.isAlive()) {
+                    ShipService.hit(ship);
+                    if (!ShipService.isShipAlive(ship)) {
                         boolean stop = false;
                         String s = entry.getValue();
                         do {

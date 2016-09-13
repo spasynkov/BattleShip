@@ -1,4 +1,12 @@
-package battleship;
+package battleship.controllers;
+
+import battleship.models.Field;
+import battleship.models.Player;
+import battleship.service.GameService;
+import battleship.utils.BattleshipUtils;
+import battleship.utils.Logger;
+import battleship.views.MachineLogic;
+import battleship.views.UserInterface;
 
 /**
  * The loader of the game.
@@ -21,8 +29,33 @@ class GameLoader {
     private static final Logger log = Logger.getInstance();
 
     public static void main(String[] args) {
-        UserInterface ui = new UserInterface(args);
-        MachineLogic ai = new MachineLogic(ui.getDesirableComputerName());
+        // setting logger
+        GameService.setLogger(log);
+        BattleshipUtils.setLogger(log);
+
+        // creating players
+        Player user = new Player("User");
+        Player computer = new Player("Computer");
+
+        // creating fields for every player
+        Field usersField = new Field();
+        user.setField(usersField);
+        Field computersField = new Field();
+        computer.setField(computersField);
+
+        // creating roles
+        UserInterface ui = new UserInterface(user, args);
+        MachineLogic ai = new MachineLogic(computer);
+
+        ui.printWelcomeMessage();
+
+        // asking user for names
+        String newName = ui.askForUserName();
+        if (!newName.isEmpty()) user.setName(newName);
+        newName = ui.askForComputersName();
+        if (!newName.isEmpty()) computer.setName(newName);
+        newName = null;
+
 
         log.write("Placing computer's ships by running a new thread.");
         Thread thread = new Thread(ai, "Placing ships by computer");

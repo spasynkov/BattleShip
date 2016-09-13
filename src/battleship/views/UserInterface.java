@@ -1,4 +1,9 @@
-package battleship;
+package battleship.views;
+
+import battleship.ShipPlacementException;
+import battleship.models.Player;
+import battleship.service.GameService;
+import battleship.utils.BattleshipUtils;
 
 import java.io.*;
 import java.util.Enumeration;
@@ -9,39 +14,22 @@ import java.util.Properties;
 /**
  * This class is responsible for interaction with a user using console.
  */
-class UserInterface extends Player {
+public class UserInterface extends GameService {
     private static final Map<String, String> LANG = new HashMap<>();
     private static final BufferedReader CONSOLE_READER = new BufferedReader(new InputStreamReader(System.in));
 
     private String enemyName;
 
-    UserInterface() {
+    /*UserInterface() {
         super();
         //createDefaultLanguagePack();
         loadLanguage(null);
-    }
+    }*/
 
-    UserInterface(String name, String[] args) {
-        super(name);
+    public UserInterface(Player player, String[] args) {
+        super(player);
         createDefaultLanguagePack();
         loadLanguage(args);
-    }
-
-    UserInterface(String[] args){
-        this("User", args);
-        // TODO hardcoded strings
-        String name;
-        System.out.println(LANG.get("welcome text"));
-        try {
-            System.out.print("Enter your name (or leave it blank): ");
-            name = CONSOLE_READER.readLine();
-            if (name != null && !name.isEmpty()) setName(name);
-            System.out.print("Enter opponent's name (or leave it blank): ");
-            enemyName = CONSOLE_READER.readLine();
-            System.out.println("Ok.");
-        } catch (Exception e) {
-            log.write("Error while reading user/computer name.", e);
-        }
     }
 
     private static void createDefaultLanguagePack() {
@@ -62,19 +50,19 @@ class UserInterface extends Player {
         LANG.put("Fields names2", "\'s field");
         LANG.put("Game started", "Ok, game is starting right now!\n\n");
 
-        log.write("Saving " + LANG.size() + " language strings in file...");
+        logger.write("Saving " + LANG.size() + " language strings in file...");
         Properties propertiesForSave = new Properties();
         for (Map.Entry<String, String> map : LANG.entrySet()) {
             propertiesForSave.setProperty(map.getKey(), (map.getValue()));
         }
         FileOutputStream os = null;
-        log.write("Opening file for save.");
+        logger.write("Opening file for save.");
         try {
             os = new FileOutputStream("./language" + "_en");
             propertiesForSave.store(os, null);
-            log.write("Ok.");
+            logger.write("Ok.");
         } catch (IOException e) {
-            log.write("There was an error while saving language strings to file", e);
+            logger.write("There was an error while saving language strings to file", e);
         } finally {
             BattleshipUtils.closeStream(os);
         }
@@ -105,23 +93,23 @@ class UserInterface extends Player {
             fileExists = true;
         } else {
             // If not exists - check if english language pack file exists
-            log.write("Can't find " + file.getAbsolutePath() + " file. Trying to find default language pack...");
+            logger.write("Can't find " + file.getAbsolutePath() + " file. Trying to find default language pack...");
             langCode = defaultLangCode;
             file = new File("./language" + langCode);
             if (file.exists() && !file.isDirectory()) {
                 fileExists = true;
             } else {
-                log.write("Can't load default language pack from " + file.getAbsolutePath() +
+                logger.write("Can't load default language pack from " + file.getAbsolutePath() +
                         ". Generating file from available strings...");
                 createDefaultLanguagePack();   // If still not - create it from template
             }
         }
 
         if (fileExists) {
-            log.write("Loading language \"" + langCode.substring(1) + "\" from file...");
+            logger.write("Loading language \"" + langCode.substring(1) + "\" from file...");
             Properties propertiesFromFile = new Properties();
             FileInputStream is = null;
-            log.write("Opening file " + file.getAbsolutePath());
+            logger.write("Opening file " + file.getAbsolutePath());
             try {
                 is = new FileInputStream(file);
                 propertiesFromFile.load(is);
@@ -130,33 +118,75 @@ class UserInterface extends Player {
                     String key = (String) languageStrings.nextElement();
                     LANG.put(key, propertiesFromFile.getProperty(key));
                 }
-                log.write("Ok.");
+                logger.write("Ok.");
             } catch (IOException e) {
-                log.write("Failed!", e);
+                logger.write("Failed!", e);
             } finally {
                 BattleshipUtils.closeStream(is);
             }
         }
     }
 
-    String getDesirableComputerName() {
+    public static void end() {
+        closeStream(CONSOLE_READER);
+    }
+
+    public void printWelcomeMessage() {
+        System.out.println(LANG.get("welcome text"));
+    }
+
+    /**
+     * Setting this player's name
+     *
+     * @return {@link String} name for user
+     */
+    public String askForUserName() {
+        // TODO replace hardcoded strings
+        String name = "";
+        try {
+            System.out.print("Enter your name (or leave it blank): ");
+            name = CONSOLE_READER.readLine();
+        } catch (Exception e) {
+            logger.write("Error while reading user's name.", e);
+        }
+        return name;
+    }
+
+    /**
+     * Ask player for the computer's name
+     *
+     * @return {@link String} name for computer
+     */
+    public String askForComputersName() {
+        // TODO replace hardcoded strings
+        try {
+            System.out.print("Enter opponent's name (or leave it blank): ");
+            enemyName = CONSOLE_READER.readLine();
+            System.out.println("Ok.");
+        } catch (Exception e) {
+            logger.write("Error while reading computer's name.", e);
+        }
+        return enemyName;
+    }
+
+    public String getDesirableComputerName() {
         return !enemyName.isEmpty() ? enemyName : null;
     }
 
-    void placeShips() {
+    public void placeShips() {
         System.out.println(LANG.get("Rules of placing ships"));
         drawField();
         System.out.println(LANG.get("Show input format"));
         for (int i = 4; i > 0; i--) {
             placeShipByDeckNumber(i);
         }
-        synchronized (log) {
-            log.write("All ships are placed by user. Cleaning field...");
+        synchronized (logger) {
+            logger.write("All ships are placed by user. Cleaning field...");
         }
         clearField();
     }
 
-    void placeShipByDeckNumber(int numberOfDecks) {
+    public void placeShipByDeckNumber(int numberOfDecks) {
         String sNumberOfDecks = String.valueOf(numberOfDecks);
         if (numberOfDecks == 1) sNumberOfDecks = "single-";
         String start = null;
@@ -182,25 +212,25 @@ class UserInterface extends Player {
                         flag = !putShipsAtField(startX, startY, numberOfDecks, endX, endY);
                     } else flag = !putShipsAtField(startX, startY);
                 } catch (IOException e) {
-                    synchronized (log) {
-                        log.write("Exception while reading from console.", e);
+                    synchronized (logger) {
+                        logger.write("Exception while reading from console.", e);
                     }
                     // TODO add System.exit()
                 } catch (ShipPlacementException e) {
                     System.out.println("Bad coordinates");
                     // TODO обработать исключения
-                    synchronized (log) {
-                        log.write("Bad coordinates for " + sNumberOfDecks + "decker (" + start + ", " + end + ")", e);
+                    synchronized (logger) {
+                        logger.write("Bad coordinates for " + sNumberOfDecks + "decker (" + start + ", " + end + ")", e);
                     }
                 } catch (Exception e) {
                     System.out.println(LANG.get("Abstract error"));
-                    synchronized (log) {
-                        log.write("Something bad happened while user was trying to place his ships.", e);
+                    synchronized (logger) {
+                        logger.write("Something bad happened while user was trying to place his ships.", e);
                     }
                 }
             } while (flag);
-            synchronized (log) {
-                log.write("Coordinates for user's " + sNumberOfDecks + "decker: (" +
+            synchronized (logger) {
+                logger.write("Coordinates for user's " + sNumberOfDecks + "decker: (" +
                         start.toUpperCase() + (numberOfDecks > 1 ? ", " + end.toUpperCase() : "") + ").");
             }
             drawField();
@@ -208,25 +238,25 @@ class UserInterface extends Player {
         }
     }
 
-    int beingAttacked(int x, int y) {
+    public int beingAttacked(int x, int y) {
         // TODO hardcoded strings
         int result = checkDeckAtField(x, y);
         System.out.print("Computer shoots at: " + (char)('A' + x) + (y + 1) + "... ");
-        log.write("Computer shoots at: " + (char)('A' + x) + (y + 1) + ".");
+        logger.write("Computer shoots at: " + (char) ('A' + x) + (y + 1) + ".");
         if (result == 0) {
             System.out.println("But it missed. Your turn.");
-            log.write("Computer misses.");
+            logger.write("Computer misses.");
             return result;
         }
         if (result > 0) {
             if (result == 1) {
                 System.out.println("Computer hits your ship.");
-                log.write("Computer hits ship.");
+                logger.write("Computer hits ship.");
                 return result;
             }
             if (result == 2) {
                 System.out.println("Computer killed your ship.");
-                log.write("Computer kills ship.");
+                logger.write("Computer kills ship.");
                 return result;
             }
         }
@@ -234,7 +264,7 @@ class UserInterface extends Player {
         return result;
     }
 
-    void makeShoot(Player enemy) {
+    public void makeShoot(GameService enemy) {
         // TODO replace hardcoded language strings
         int x = -1, y = -1;
         int repeat = 1;
@@ -252,9 +282,9 @@ class UserInterface extends Player {
                 x = coordinates[0];
                 y = coordinates[1];
             } catch (ShipPlacementException e) {
-                log.write("User input had bad coordinates for shoot: " + sCoordinates, e);
+                logger.write("User input had bad coordinates for shoot: " + sCoordinates, e);
             } catch (Exception e) {
-                log.write("There was an error while getting user's coordinates for next shoot", e);
+                logger.write("There was an error while getting user's coordinates for next shoot", e);
             }
             if (x >= 0 && !isAvailableForShoot(enemy.getCell(x, y))) {
                 System.out.println("You already shoot this cell. Try another one.");
@@ -262,26 +292,26 @@ class UserInterface extends Player {
             }
             if (x >= 0) {
                 repeat = enemy.beingAttacked(x, y);
-                log.write("User shoots: " + (char)('A' + x) + (y + 1) + ".");
+                logger.write("User shoots: " + (char) ('A' + x) + (y + 1) + ".");
                 switch (repeat) {
                     case -1 : {
                         System.out.println("You already shoot this cell1. Try another one.");
-                        log.write("User already shoot this cell.");
+                        logger.write("User already shoot this cell.");
                         break;
                     }
                     case 0 : {
                         System.out.println("You missed. Computer's turn.");
-                        log.write("User misses.");
+                        logger.write("User misses.");
                         break;
                     }
                     case 1 : {
                         System.out.println("You hit computer's ship! Shoot again!");
-                        log.write("User hits a ship.");
+                        logger.write("User hits a ship.");
                         break;
                     }
                     case 2 : {
                         System.out.println("Great! You've just killed computer's ship!");
-                        log.write("User kills computer's ship.");
+                        logger.write("User kills computer's ship.");
                         break;
                     }
                 }
@@ -290,7 +320,7 @@ class UserInterface extends Player {
         if (cycleCounter > getTheLongestStreak()) setTheLongestStreak(cycleCounter);
     }
 
-    protected void won() {
+    public void won() {
         super.won();
         // TODO replace hardcoded language strings
         System.out.println("You won!");
@@ -324,7 +354,7 @@ class UserInterface extends Player {
     /**
      * Call this if you need to draw full field.
      */
-    void drawField() {
+    private void drawField() {
         System.out.println("   --------------------------------");
         for (int i = 9; i >= 0; i--) {
             if (i != 9) System.out.print(" ");
@@ -339,8 +369,8 @@ class UserInterface extends Player {
         System.out.println("     A  B  C  D  E  F  G  H  I  J");
     }
 
-    void drawAllFields(Player enemy) {
-        System.out.println(LANG.get("Fields names1") + enemy.getName() + LANG.get("Fields names2"));
+    public void drawAllFields(GameService enemy) {
+        System.out.println(LANG.get("Fields names1") + enemy.getPlayerName() + LANG.get("Fields names2"));
         System.out.println("   --------------------------------    --------------------------------");
         for (int i = 9; i >= 0; i--) {
             String number;
@@ -362,24 +392,20 @@ class UserInterface extends Player {
         System.out.println("     A  B  C  D  E  F  G  H  I  J        A  B  C  D  E  F  G  H  I  J");
     }
 
-    void askToWait() {
+    public void askToWait() {
         System.out.println(LANG.get("Wait for computer ships"));
     }
 
-    void gameStarted() {
+    public void gameStarted() {
         System.out.println(LANG.get("Game started"));
     }
 
     public void loose() {
         // TODO replace hardcoded language strings
-        System.out.println(getName() + " loose.");
-        log.write("User \'" + getName() + "\' loose. User moves = " + getTheNumberOfMovesPlayerDid() + ", the longest streak = " + getTheLongestStreak());
+        System.out.println(getPlayerName() + " loose.");
+        logger.write("User \'" + getPlayerName() + "\' loose. User moves = " + getTheNumberOfMovesPlayerDid() + ", the longest streak = " + getTheLongestStreak());
         System.out.println("You did only " + getTheNumberOfMovesPlayerDid() + " moves.");
         System.out.println("The longest streak of successful hits you did is " + getTheLongestStreak() + " hits.");
 
-    }
-
-    static void end() {
-        closeStream(CONSOLE_READER);
     }
 }

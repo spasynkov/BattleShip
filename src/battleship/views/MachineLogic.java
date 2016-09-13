@@ -1,20 +1,24 @@
-package battleship;
+package battleship.views;
+
+import battleship.ShipPlacementException;
+import battleship.models.Player;
+import battleship.service.GameService;
 
 import java.util.Random;
 
 /**
  * This class contains methods for implementation some computer's logic in this game.
  */
-class MachineLogic extends Player implements Runnable {
+public class MachineLogic extends GameService implements Runnable {
     private static final Random random = new Random();
 
-    MachineLogic() {
-        this("Computer");
-    }
-
-    MachineLogic(String name) {
-        super();
-        setName((name != null && !name.isEmpty()) ? name : "Computer");
+    /**
+     * Calling {@link GameService}'s constructor
+     *
+     * @param player player to be used as a computer player
+     */
+    public MachineLogic(Player player) {
+        super(player);
     }
 
     @Override
@@ -23,18 +27,18 @@ class MachineLogic extends Player implements Runnable {
     }
 
     @Override
-    protected void placeShips() {
+    public void placeShips() {
         for (int i = 4; i > 0; i--) {
             placeShipByDeckNumber(i);
         }
-        synchronized (log) {
-            log.write("All computer's ships were placed. Cleaning field...");
+        synchronized (logger) {
+            logger.write("All computer's ships were placed. Cleaning field...");
         }
         clearField();
     }
 
     @Override
-    void placeShipByDeckNumber(int numberOfDecks) {
+    public void placeShipByDeckNumber(int numberOfDecks) {
         for (int i = numberOfDecks - 1; i < 4; i++) {   // for each ship of this type (with same number of decks)
             boolean flag = true;
             String start, end = "";
@@ -64,22 +68,22 @@ class MachineLogic extends Player implements Runnable {
                 } catch (ShipPlacementException e) {
                     // ok, we cant place ship here. let's try again
                 } catch (Exception e) {
-                    synchronized (log) {
-                        log.write("Something bad happened while placing computer's ships.", e);
+                    synchronized (logger) {
+                        logger.write("Something bad happened while placing computer's ships.", e);
                     }
                 }
             } while (flag);
 
-            synchronized (log) {
+            synchronized (logger) {
                 if (numberOfDecks != 1)
-                    log.write("Computer put his ship with " + numberOfDecks + " decks at: (" + start.toUpperCase() + ", " + end.toUpperCase() + ").");
-                else log.write("Computer put his ship with 1 deck at: (" + start.toUpperCase() + ").");
+                    logger.write("Computer put his ship with " + numberOfDecks + " decks at: (" + start.toUpperCase() + ", " + end.toUpperCase() + ").");
+                else logger.write("Computer put his ship with 1 deck at: (" + start.toUpperCase() + ").");
             }
         }
     }
 
     @Override
-    void makeShoot(Player enemy) {
+    public void makeShoot(GameService enemy) {
         int x, y;
         boolean repeat;
         do {
@@ -92,13 +96,13 @@ class MachineLogic extends Player implements Runnable {
             try {
                 Thread.sleep(2000L);
             } catch (InterruptedException e) {
-                log.write("Main thread was interrupted while sleeping after computer's turn", e);
+                logger.write("Main thread was interrupted while sleeping after computer's turn", e);
             }
         } while (repeat);
     }
 
     @Override
-    int beingAttacked(int x, int y) {
+    public int beingAttacked(int x, int y) {
         return checkDeckAtField(x, y);
     }
 }
