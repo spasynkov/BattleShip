@@ -9,27 +9,27 @@ import battleship.utils.Logger;
 import java.io.Closeable;
 
 /**
- * Abstract class that describes the logic of the game.
+ * Abstract class that describes the logic of some player.
  */
-public abstract class GameService implements GameLogic {
+public abstract class PlayersLogic implements PlayersActions {
     protected static Logger logger;
     private final Field field = new Field();
     private Player player;
     private int theLongestStreak;
     private int theNumberOfMovesPlayerDid;
 
-    public GameService() {
+    public PlayersLogic() {
         theLongestStreak = 0;
         theNumberOfMovesPlayerDid = 0;
     }
 
-    public GameService(Player player) {
+    public PlayersLogic(Player player) {
         this();
         this.player = player;
     }
 
     public static void setLogger(Logger logger) {
-        GameService.logger = logger;
+        PlayersLogic.logger = logger;
     }
 
     protected static void closeStream(Closeable object) {

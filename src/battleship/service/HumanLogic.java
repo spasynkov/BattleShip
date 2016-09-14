@@ -3,7 +3,7 @@ package battleship.service;
 /**
  * Methods to be called while working with human user
  */
-public class HumanLogic extends GameService {
+public class HumanLogic extends PlayersLogic {
     @Override
     public void placeShips() {
 
@@ -20,7 +20,7 @@ public class HumanLogic extends GameService {
     }
 
     @Override
-    public void makeShoot(GameService enemy) {
+    public void makeShoot(PlayersLogic enemy) {
 
     }
 }

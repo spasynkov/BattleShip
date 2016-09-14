@@ -8,13 +8,13 @@ import java.util.Random;
 /**
  * This class contains methods for implementation some computer's logic in this game.
  */
-public class MachineLogic extends GameService implements Runnable {
+public class MachineLogic extends PlayersLogic implements Runnable {
     private static final Random random = new Random();
 
     private final Thread thisThread = new Thread(this, "Placing ships by computer");
 
     /**
-     * Calling {@link GameService}'s constructor
+     * Calling {@link PlayersLogic}'s constructor
      *
      * @param player player to be used as a computer player
      */
@@ -97,7 +97,7 @@ public class MachineLogic extends GameService implements Runnable {
     }
 
     @Override
-    public void makeShoot(GameService enemy) {
+    public void makeShoot(PlayersLogic enemy) {
         int x, y;
         boolean repeat;
         do {

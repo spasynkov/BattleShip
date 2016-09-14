@@ -3,7 +3,7 @@ package battleship.service;
 /**
  * The main logic of every player in the game
  */
-public interface GameLogic {
+public interface PlayersActions {
     /**
      * Place different ships at field
      */
@@ -33,7 +33,7 @@ public interface GameLogic {
     /**
      * Makes a shoot at enemy's field
      *
-     * @param enemy particular {@link GameService} to shoot at
+     * @param enemy particular {@link PlayersLogic} to shoot at
      */
-    void makeShoot(GameService enemy);
+    void makeShoot(PlayersLogic enemy);
 }

@@ -3,11 +3,11 @@ package battleship.controllers;
 import battleship.entities.Field;
 import battleship.entities.Player;
 import battleship.service.FieldService;
-import battleship.service.GameService;
 import battleship.service.MachineLogic;
+import battleship.service.PlayersLogic;
 import battleship.utils.BattleshipUtils;
 import battleship.utils.Logger;
-import battleship.views.UserInterface;
+import battleship.views.TextUserInterface;
 
 /**
  * The loader of the game.
@@ -32,7 +32,7 @@ class GameLoader {
 
     public static void main(String[] args) {
         // setting logger
-        GameService.setLogger(log);
+        PlayersLogic.setLogger(log);
         BattleshipUtils.setLogger(log);
 
         // creating players
@@ -52,7 +52,7 @@ class GameLoader {
         FieldService computerFieldService = new FieldService(computersField);
 
         // creating roles
-        UserInterface ui = new UserInterface(user, args);
+        TextUserInterface ui = new TextUserInterface(user, args);
         MachineLogic ai = new MachineLogic(computer);
 
         ui.printWelcomeMessage();
@@ -96,7 +96,7 @@ class GameLoader {
         if (ui.isMoreShips()) ui.won();
         else ui.loose();
 
-        UserInterface.end();
+        TextUserInterface.end();
         log.write("Program finished.");
         log.write();
         BattleshipUtils.closeStream(log);

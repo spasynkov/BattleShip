@@ -2,8 +2,7 @@ package battleship.views;
 
 import battleship.ShipPlacementException;
 import battleship.entities.Player;
-import battleship.service.GameService;
-import battleship.utils.BattleshipUtils;
+import battleship.service.PlayersLogic;
 
 import java.io.*;
 import java.util.Enumeration;
@@ -11,22 +10,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static battleship.utils.BattleshipUtils.closeStream;
+
 /**
  * This class is responsible for interaction with a user using console.
  */
-public class UserInterface extends GameService {
+public class TextUserInterface {
     private static final Map<String, String> LANG = new HashMap<>();
     private static final BufferedReader CONSOLE_READER = new BufferedReader(new InputStreamReader(System.in));
 
     private String enemyName;
 
-    /*UserInterface() {
+    /*TextUserInterface() {
         super();
         //createDefaultLanguagePack();
         loadLanguage(null);
     }*/
 
-    public UserInterface(Player player, String[] args) {
+    public TextUserInterface(Player player, String[] args) {
         super(player);
         createDefaultLanguagePack();
         loadLanguage(args);
@@ -64,7 +65,7 @@ public class UserInterface extends GameService {
         } catch (IOException e) {
             logger.write("There was an error while saving language strings to file", e);
         } finally {
-            BattleshipUtils.closeStream(os);
+            closeStream(os);
         }
     }
 
@@ -119,7 +120,7 @@ public class UserInterface extends GameService {
             } catch (IOException e) {
                 logger.write("Failed!", e);
             } finally {
-                BattleshipUtils.closeStream(is);
+                closeStream(is);
             }
         }
     }
@@ -261,7 +262,7 @@ public class UserInterface extends GameService {
         return result;
     }
 
-    public void makeShoot(GameService enemy) {
+    public void makeShoot(PlayersLogic enemy) {
         // TODO replace hardcoded language strings
         int x = -1, y = -1;
         int repeat = 1;
@@ -366,7 +367,7 @@ public class UserInterface extends GameService {
         System.out.println("     A  B  C  D  E  F  G  H  I  J");
     }
 
-    public void drawAllFields(GameService enemy) {
+    public void drawAllFields(PlayersLogic enemy) {
         System.out.println(LANG.get("Fields names1") + enemy.getPlayerName() + LANG.get("Fields names2"));
         System.out.println("   --------------------------------    --------------------------------");
         for (int i = 9; i >= 0; i--) {
