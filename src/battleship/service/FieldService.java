@@ -13,50 +13,75 @@ import java.util.Set;
  * Stores the logic for operating with {@link battleship.entities.Field} objects
  */
 public class FieldService {
+    private Field field;
+
+    private int maxX;
+    private int maxY;
+    private boolean[][] fieldValues;
+
+    public FieldService() {
+    }
+
+    public FieldService(Field field) {
+        this.field = field;
+        maxX = field.getMaxXFieldSize();
+        maxY = field.getMaxYFieldSize();
+        fieldValues = field.getField();
+    }
+
+    public Field getField() {
+        return field;
+    }
+
+    public void setField(Field field) {
+        this.field = field;
+        maxX = field.getMaxXFieldSize();
+        maxY = field.getMaxYFieldSize();
+        fieldValues = field.getField();
+    }
+
     /**
      * Clears the field
      */
-    public static void clear(Field field) {
-        boolean[][] values = field.getField();
-        for (int i = 0; i < field.getMaxYFieldSize(); i++) {
-            for (int j = 0; j < field.getMaxXFieldSize(); j++) {
-                values[i][j] = false;
+    public void clear() {
+        for (int i = 0; i < maxY; i++) {
+            for (int j = 0; j < maxX; j++) {
+                fieldValues[i][j] = false;
             }
         }
     }
 
-    public static boolean getCell(Field field, Coordinates coordinates) {
-        return field.getField()[coordinates.getY()][coordinates.getX()];
+    public boolean getCell(Coordinates coordinates) {
+        return fieldValues[coordinates.getY()][coordinates.getX()];
     }
 
-    public static boolean getCell(Field field, int x, int y) {
-        return field.getField()[y][x];
+    public boolean getCell(int x, int y) {
+        return fieldValues[y][x];
     }
 
-    public static boolean[] getLine(Field field, int row) {
-        boolean[] result = new boolean[field.getMaxXFieldSize()];
-        System.arraycopy(field.getField()[field.getMaxXFieldSize()], 0, result, 0, result.length);
+    public boolean[] getLine(int row) {
+        boolean[] result = new boolean[maxX];
+        System.arraycopy(fieldValues[row], 0, result, 0, result.length);
         return result;
     }
 
-    public static int getShipsNumber(Field field) {
+    public int getShipsNumber() {
         return field.getShips().size();
     }
 
-    public static Set<Coordinates> getEmptyCells(Field field) {
+    public Set<Coordinates> getEmptyCells() {
         Set<Coordinates> result = new HashSet<>();
-        boolean[][] values = field.getField();
-        for (int i = 0; i < field.getMaxYFieldSize(); i++) {
-            for (int j = 0; j < field.getMaxXFieldSize(); j++) {
-                if (!values[i][j]) result.add(new Coordinates(j, i));
+
+        for (int i = 0; i < maxY; i++) {
+            for (int j = 0; j < maxX; j++) {
+                if (!fieldValues[i][j]) result.add(new Coordinates(j, i));
             }
         }
         return result;
     }
 
-    // TODO: rename at "hitShipAtField"
-    public static int checkDeckAtField(Field field, Coordinates coordinates) {
-        if (field.getField()[coordinates.getY()][coordinates.getX()]) {
+    public int hitShipAtField(Coordinates coordinates) {
+        if (fieldValues[coordinates.getY()][coordinates.getX()]) {
             // hit! lets check if if was the last deck of the ship
             Ship ship = findShipByCoordinates(field.getShips(), coordinates);
             ShipService.hit(ship);  // boom!
@@ -79,7 +104,7 @@ public class FieldService {
      * @return link at {@link battleship.entities.Ship} we found,
      * or <code>null</code> if there are no ships with these coordinates
      */
-    private static Ship findShipByCoordinates(List<Ship> ships, Coordinates coordinates) {
+    private Ship findShipByCoordinates(List<Ship> ships, Coordinates coordinates) {
         for (Ship ship : ships) {
             for (Coordinates shipCoordinates : ShipService.getCoordinatesOfTheShip(ship)) {
                 if (shipCoordinates.equals(coordinates)) {
@@ -97,7 +122,6 @@ public class FieldService {
      * There is no difference what coordinates will be grater than other.<br>
      * It will convert it so you don't need to think about this.<br>
      *
-     * @param field         the field to operate with
      * @param startX        starting X coordinate for a ship
      * @param startY        starting Y coordinate for a ship
      * @param numberOfDecks the number of decks in a ship
@@ -106,11 +130,9 @@ public class FieldService {
      * @return <code>true</code> if ship was created and put at field
      * @throws ShipPlacementException if coordinates are wrong or not valid
      */
-    public static boolean putShip(Field field, int startX, int startY, int numberOfDecks, int endX, int endY)
+    public boolean putShip(int startX, int startY, int numberOfDecks, int endX, int endY)
             throws ShipPlacementException {
 
-        int maxX = field.getMaxXFieldSize();
-        int maxY = field.getMaxYFieldSize();
         if (startX >= maxX || startY >= maxY || endX >= maxX || endY >= maxY ||
                 startX <= 0 || startY <= 0 || endX <= 0 || endY <= 0) {
             throw new ShipPlacementException("Coordinates out of range");
@@ -146,8 +168,8 @@ public class FieldService {
 
         // Checking if every deck is not too close to other ships. If it is - exception would be thrown.
         for (int i = startCell; i < endCell; i++) {
-            if (xDirection) checkIfCloseByXY(field, i, startY);
-            else checkIfCloseByXY(field, startX, i);
+            if (xDirection) checkIfCloseByXY(i, startY);
+            else checkIfCloseByXY(startX, i);
         }
 
         // creating ship instance
@@ -159,9 +181,8 @@ public class FieldService {
                 Math.max(startY, endY));
 
         // setting true values at the field at needed coordinates
-        boolean[][] values = field.getField();
         for (Coordinates coordinates : ShipService.getCoordinatesOfTheShip(ship)) {
-            values[coordinates.getY()][coordinates.getX()] = true;
+            fieldValues[coordinates.getY()][coordinates.getX()] = true;
         }
         field.getShips().add(ship);     // ship added
 
@@ -172,18 +193,17 @@ public class FieldService {
      * This method will check if some ship you're trying to put could be placed.<br>
      * Works only for ships with 1 deck.<br>
      *
-     * @param field the field to operate with
      * @param x     X coordinate for a ship
      * @param y     Y coordinate for a ship
      * @return <code>true</code> if ship was created and put at field
      * @throws ShipPlacementException if coordinates are wrong or not valid
      */
-    public static boolean putShip(Field field, int x, int y) throws ShipPlacementException {
+    public boolean putShip(int x, int y) throws ShipPlacementException {
         // Checking if coordinates for this ship are not too close to other ships. If it is - exception would be thrown.
-        checkIfCloseByXY(field, x, y);
+        checkIfCloseByXY(x, y);
 
         Ship ship = ShipService.createShip(x, y);   // creating ship instance
-        field.getField()[y][x] = true;              // setting true value at the field at needed coordinates
+        fieldValues[y][x] = true;                   // setting true value at the field at needed coordinates
         field.getShips().add(ship);                 // ship added
 
         return true;
@@ -193,25 +213,23 @@ public class FieldService {
      * Checking if there any other ships close to that one you're trying to put.
      * Returns nothing except new exceptions for you to work with :)
      */
-    private static void checkIfCloseByXY(Field field, int x, int y) throws ShipPlacementException {
+    private void checkIfCloseByXY(int x, int y) throws ShipPlacementException {
         ShipPlacementException e = new ShipPlacementException("Too close to other ships");
-        int maxX = field.getMaxXFieldSize();
-        int maxY = field.getMaxYFieldSize();
 
         // check current cell
-        if (getCell(field, x, y)) throw new ShipPlacementException("Cell isn't empty");
+        if (getCell(x, y)) throw new ShipPlacementException("Cell isn't empty");
 
         if (x > 0) {                                                        // if we could move at left
-            if (y - 1 >= 0 && getCell(field, x - 1, y - 1)) throw e;        // check top-left cell
-            if (getCell(field, x - 1, y)) throw e;                          // check left cell
-            if (y + 1 < maxY && getCell(field, x - 1, y + 1)) throw e;      // check bottmo-left cell
+            if (y - 1 >= 0 && getCell(x - 1, y - 1)) throw e;        // check top-left cell
+            if (getCell(x - 1, y)) throw e;                          // check left cell
+            if (y + 1 < maxY && getCell(x - 1, y + 1)) throw e;      // check bottmo-left cell
         }
         if (x < maxX) {                                                 // if we could go at right
-            if (y - 1 >= 0 && getCell(field, x + 1, y - 1)) throw e;        // check top-right cell
-            if (getCell(field, x + 1, y)) throw e;                          // check right cell
-            if (y + 1 < maxY && getCell(field, x + 1, y + 1)) throw e;      // check bottom-right cell
+            if (y - 1 >= 0 && getCell(x + 1, y - 1)) throw e;        // check top-right cell
+            if (getCell(x + 1, y)) throw e;                          // check right cell
+            if (y + 1 < maxY && getCell(x + 1, y + 1)) throw e;      // check bottom-right cell
         }
-        if (y - 1 >= 0 && getCell(field, x, y - 1)) throw e;                // check top cell
-        if (y + 1 < maxY && getCell(field, x, y + 1)) throw e;              // check bottom cell
+        if (y - 1 >= 0 && getCell(x, y - 1)) throw e;                // check top cell
+        if (y + 1 < maxY && getCell(x, y + 1)) throw e;              // check bottom cell
     }
 }

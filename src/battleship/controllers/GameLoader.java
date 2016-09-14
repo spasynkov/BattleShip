@@ -2,6 +2,7 @@ package battleship.controllers;
 
 import battleship.entities.Field;
 import battleship.entities.Player;
+import battleship.service.FieldService;
 import battleship.service.GameService;
 import battleship.utils.BattleshipUtils;
 import battleship.utils.Logger;
@@ -45,6 +46,10 @@ class GameLoader {
         user.setField(usersField);
         Field computersField = new Field(10, 10, 10);
         computer.setField(computersField);
+
+        // creating field services to operate with fields
+        FieldService userFieldService = new FieldService(usersField);
+        FieldService computerFieldService = new FieldService(computersField);
 
         // creating roles
         UserInterface ui = new UserInterface(user, args);
