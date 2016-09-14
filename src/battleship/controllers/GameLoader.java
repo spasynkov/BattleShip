@@ -1,7 +1,7 @@
 package battleship.controllers;
 
-import battleship.models.Field;
-import battleship.models.Player;
+import battleship.entities.Field;
+import battleship.entities.Player;
 import battleship.service.GameService;
 import battleship.utils.BattleshipUtils;
 import battleship.utils.Logger;
@@ -25,6 +25,7 @@ import battleship.views.UserInterface;
 // todo: add languages
 // todo: play with comp against comp
 // todo: int -> byte
+// TODO: fix javadocs
 class GameLoader {
     private static final Logger log = Logger.getInstance();
 
@@ -37,10 +38,12 @@ class GameLoader {
         Player user = new Player("User");
         Player computer = new Player("Computer");
 
+        // TODO: get fields size and number of ships from properties
+
         // creating fields for every player
-        Field usersField = new Field();
+        Field usersField = new Field(10, 10, 10);
         user.setField(usersField);
-        Field computersField = new Field();
+        Field computersField = new Field(10, 10, 10);
         computer.setField(computersField);
 
         // creating roles

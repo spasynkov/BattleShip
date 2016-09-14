@@ -1,7 +1,11 @@
 package battleship.service;
 
 import battleship.ShipPlacementException;
-import battleship.models.Ship;
+import battleship.entities.Coordinates;
+import battleship.entities.Ship;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Simple logic for calculating ship's stats
@@ -18,12 +22,12 @@ public class ShipService {
      * @return the link for a particular {@link Ship} that just created
      * @throws ShipPlacementException if bad coordinates or number of decks would be found
      */
-    public static Ship placeShip(int startX, int startY, int numberOfDecks, int endX, int endY)
+    public static Ship createShip(int startX, int startY, int numberOfDecks, int endX, int endY)
             throws ShipPlacementException {
 
         checkCoordinates(startX, startY, numberOfDecks, endX, endY);
         if (numberOfDecks == 1) {
-            return placeShip(startX, startY);
+            return createShip(startX, startY);
         }
 
         boolean xDirection;
@@ -43,11 +47,12 @@ public class ShipService {
      * @return the link for a particular {@link Ship} that just created
      * @throws ShipPlacementException if bad coordinates would be found
      */
-    public static Ship placeShip(int startX, int startY) throws ShipPlacementException {
+    public static Ship createShip(int startX, int startY) throws ShipPlacementException {
         checkCoordinates(startX, startY);
         return new Ship(startX, startY);
     }
 
+    // Could be redundant because we did this check in FieldService class
     private static void checkCoordinates(int startX, int startY, int numberOfDecks, int endX, int endY)
             throws ShipPlacementException {
 
@@ -56,6 +61,7 @@ public class ShipService {
         }
     }
 
+    // Could be redundant because we did this check in FieldService class
     private static void checkCoordinates(int startX, int startY) throws ShipPlacementException {
         if (startX < 1 || startY < 1) {
             throw new ShipPlacementException("Coordinates for ship and decks number should be a positive value.");
@@ -77,18 +83,23 @@ public class ShipService {
     }
 
     /**
-     * Returns the full list of coordinates this ship takes at the battlefield.
+     * Returns the full set of calculated coordinates that ship takes at the battlefield.
      * [deck number] [x, y]
      */
-    public static int[][] getCoordinatesOfTheShip(Ship ship) {
-        int[][] result = new int[ship.getLength()][2];
-        if (ship.isxDirection()) {
-            for (int deckNumber = 0; deckNumber < ship.getLength(); deckNumber++) {
-                result[deckNumber] = new int[]{ship.getStartX() + deckNumber, ship.getStartY()};
+    public static Set<Coordinates> getCoordinatesOfTheShip(Ship ship) {
+        int shipLength = ship.getLength();
+        Set<Coordinates> result = new HashSet<>(shipLength);
+
+        int constantIndex;    // the same number for coordinates pair. X if ship is horizontal, or Y if it's not
+        if (ship.isHorizontal()) {
+            constantIndex = ship.getStartX();
+            for (int i = ship.getStartY(); i < ship.getStartY() + shipLength; i++) {
+                result.add(new Coordinates(constantIndex, i));
             }
         } else {
-            for (int deckNumber = 0; deckNumber < ship.getLength(); deckNumber++) {
-                result[deckNumber] = new int[]{ship.getStartX(), ship.getStartY() + deckNumber};
+            constantIndex = ship.getStartY();
+            for (int i = 0; i < ship.getStartX() + shipLength; i++) {
+                result.add(new Coordinates(i, constantIndex));
             }
         }
         return result;

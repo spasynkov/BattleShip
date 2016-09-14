@@ -1,6 +1,6 @@
 package models;
 
-import battleship.models.Player;
+import battleship.entities.Player;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

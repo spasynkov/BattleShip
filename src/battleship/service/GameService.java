@@ -1,8 +1,8 @@
 package battleship.service;
 
 import battleship.ShipPlacementException;
-import battleship.models.Field;
-import battleship.models.Player;
+import battleship.entities.Field;
+import battleship.entities.Player;
 import battleship.utils.BattleshipUtils;
 import battleship.utils.Logger;
 

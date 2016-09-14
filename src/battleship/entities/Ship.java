@@ -1,4 +1,4 @@
-package battleship.models;
+package battleship.entities;
 
 /**
  * Ships in this game stores in memory like vectors:
@@ -23,7 +23,7 @@ public class Ship {
     /**
      * Direction of the ship: if ship placed by X and false if by Y
      */
-    private boolean xDirection;
+    private boolean isHorizontal;
 
     /**
      * The number of decks without fire and holes from bombs
@@ -42,10 +42,10 @@ public class Ship {
     /**
      * Constructor for ships with 2 and more decks.
      */
-    public Ship(int startX, int startY, int numberOfDecks, boolean xDirection) {
+    public Ship(int startX, int startY, int numberOfDecks, boolean isHorizontal) {
         this.startX = startX;
         this.startY = startY;
-        this.xDirection = xDirection;
+        this.isHorizontal = isHorizontal;
         safeDecks = this.length = numberOfDecks;
     }
 
@@ -61,8 +61,8 @@ public class Ship {
         return length;
     }
 
-    public boolean isxDirection() {
-        return xDirection;
+    public boolean isHorizontal() {
+        return isHorizontal;
     }
 
     public int getStartX() {
@@ -76,6 +76,6 @@ public class Ship {
     @Override
     public String toString() {
         return "(" + startX + ", " + startY + ") -> " + length +
-                ", direction: " + (xDirection? "x; " : "y; ");
+                ", direction: " + (isHorizontal ? "x; " : "y; ");
     }
 }

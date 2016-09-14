@@ -1,7 +1,7 @@
 package battleship.views;
 
 import battleship.ShipPlacementException;
-import battleship.models.Player;
+import battleship.entities.Player;
 import battleship.service.GameService;
 
 import java.util.Random;
