@@ -88,10 +88,9 @@ public class UserInterface extends GameService {
 
         // Check if file exists
         File file = new File("./language" + langCode);
-        boolean fileExists = false;
-        if (file.exists() && !file.isDirectory()) {
-            fileExists = true;
-        } else {
+        boolean fileExists = file.exists() && !file.isDirectory();
+
+        if (!fileExists) {
             // If not exists - check if english language pack file exists
             logger.write("Can't find " + file.getAbsolutePath() + " file. Trying to find default language pack...");
             langCode = defaultLangCode;
@@ -103,9 +102,7 @@ public class UserInterface extends GameService {
                         ". Generating file from available strings...");
                 createDefaultLanguagePack();   // If still not - create it from template
             }
-        }
-
-        if (fileExists) {
+        } else {
             logger.write("Loading language \"" + langCode.substring(1) + "\" from file...");
             Properties propertiesFromFile = new Properties();
             FileInputStream is = null;

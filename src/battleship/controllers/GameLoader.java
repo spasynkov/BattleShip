@@ -4,9 +4,9 @@ import battleship.entities.Field;
 import battleship.entities.Player;
 import battleship.service.FieldService;
 import battleship.service.GameService;
+import battleship.service.MachineLogic;
 import battleship.utils.BattleshipUtils;
 import battleship.utils.Logger;
-import battleship.views.MachineLogic;
 import battleship.views.UserInterface;
 
 /**
@@ -64,24 +64,23 @@ class GameLoader {
         if (!newName.isEmpty()) computer.setName(newName);
         newName = null;
 
-
-        log.write("Placing computer's ships by running a new thread.");
-        Thread thread = new Thread(ai, "Placing ships by computer");
-        thread.start();
+        // ships placement
+        ai.placeShips();
         synchronized (log) {
             log.write("Asking user to place his ships.");
         }
         ui.placeShips();
-        if (thread.isAlive()) {
+        if (ai.isAlive()) {
             ui.askToWait();
             try {
-                thread.join();
+                ai.waitForFinishingThread();
                 log.write("Computer's ships placement finished.");
             } catch (InterruptedException e) {
                 log.write("Computer's ships placement was interrupted by something.", e);
-                // TODO add System.exit()
+                System.exit(1);     // TODO: define statuses
             }
         }
+
         ui.gameStarted();
 
         int counter = 0;

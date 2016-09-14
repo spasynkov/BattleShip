@@ -1,8 +1,7 @@
-package battleship.views;
+package battleship.service;
 
 import battleship.ShipPlacementException;
 import battleship.entities.Player;
-import battleship.service.GameService;
 
 import java.util.Random;
 
@@ -11,6 +10,8 @@ import java.util.Random;
  */
 public class MachineLogic extends GameService implements Runnable {
     private static final Random random = new Random();
+
+    private final Thread thisThread = new Thread(this, "Placing ships by computer");
 
     /**
      * Calling {@link GameService}'s constructor
@@ -22,12 +23,25 @@ public class MachineLogic extends GameService implements Runnable {
     }
 
     @Override
-    public void run() {
-        placeShips();
+    public void placeShips() {
+        logger.write("Placing computer's ships by running a new thread.");
+        thisThread.start();
     }
 
     @Override
-    public void placeShips() {
+    public void run() {
+        generateShips();
+    }
+
+    public boolean isAlive() {
+        return thisThread.isAlive();
+    }
+
+    public void waitForFinishingThread() throws InterruptedException {
+        thisThread.join();
+    }
+
+    private void generateShips() {
         for (int i = 4; i > 0; i--) {
             placeShipByDeckNumber(i);
         }
