@@ -198,18 +198,20 @@ public class FieldService {
         int maxX = field.getMaxXFieldSize();
         int maxY = field.getMaxYFieldSize();
 
+        // check current cell
         if (getCell(field, x, y)) throw new ShipPlacementException("Cell isn't empty");
-        if (x > 0) {
-            if (y - 1 >= 0 && getCell(field, x - 1, y - 1)) throw e;
-            if (getCell(field, x - 1, y)) throw e;
-            if (y + 1 < maxY && getCell(field, x - 1, y + 1)) throw e;
+
+        if (x > 0) {                                                        // if we could move at left
+            if (y - 1 >= 0 && getCell(field, x - 1, y - 1)) throw e;        // check top-left cell
+            if (getCell(field, x - 1, y)) throw e;                          // check left cell
+            if (y + 1 < maxY && getCell(field, x - 1, y + 1)) throw e;      // check bottmo-left cell
         }
-        if (x < maxX) {
-            if (y - 1 >= 0 && getCell(field, x + 1, y - 1)) throw e;
-            if (getCell(field, x + 1, y)) throw e;
-            if (y + 1 < maxY && getCell(field, x + 1, y + 1)) throw e;
+        if (x < maxX) {                                                 // if we could go at right
+            if (y - 1 >= 0 && getCell(field, x + 1, y - 1)) throw e;        // check top-right cell
+            if (getCell(field, x + 1, y)) throw e;                          // check right cell
+            if (y + 1 < maxY && getCell(field, x + 1, y + 1)) throw e;      // check bottom-right cell
         }
-        if (y - 1 >= 0 && getCell(field, x, y - 1)) throw e;
-        if (y + 1 < maxY && getCell(field, x, y + 1)) throw e;
+        if (y - 1 >= 0 && getCell(field, x, y - 1)) throw e;                // check top cell
+        if (y + 1 < maxY && getCell(field, x, y + 1)) throw e;              // check bottom cell
     }
 }
