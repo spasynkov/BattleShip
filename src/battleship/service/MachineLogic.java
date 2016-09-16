@@ -101,8 +101,9 @@ public class MachineLogic extends PlayersLogic implements Runnable {
         do {
             if (!isMoreShips()) break;
             List<Coordinates> cells = enemy.getFieldService().getEmptyCells();
-            int randomCellNumber = random.nextInt(cells.size());
-            repeat = enemy.attackedAt(cells.get(randomCellNumber)) != 0;
+            Coordinates coordinatesToShootAt = cells.get(random.nextInt(cells.size()));
+            repeat = enemy.attackedAt(coordinatesToShootAt) != 0;
+            player.addCoordinates(coordinatesToShootAt);
             try {
                 Thread.sleep(2000L);
             } catch (InterruptedException e) {

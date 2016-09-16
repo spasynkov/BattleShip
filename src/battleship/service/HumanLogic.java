@@ -126,6 +126,7 @@ public class HumanLogic extends PlayersLogic {
                     continue;   // try again
                 }
                 repeat = enemy.attackedAt(coordinates);
+                player.addCoordinates(coordinates);
                 switch (repeat) {
                     case 0: {
                         userInterface.userMissed(coordinates);

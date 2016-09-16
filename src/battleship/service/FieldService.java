@@ -88,6 +88,7 @@ public class FieldService {
             if (ShipService.isShipAlive(ship)) {
                 return 1;           // partial success
             } else {
+                field.getShips().remove(ship);
                 return 2;           // full success
             }
         }
