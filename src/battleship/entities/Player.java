@@ -45,7 +45,6 @@ public class Player {
     }
 
     public Field getField() {
-        if (field == null) throw new RuntimeException("The field is not created yet for player" + name + "!");
         return field;
     }
 

@@ -10,6 +10,7 @@ import java.io.IOException;
 /**
  * Methods to be called while working with human user
  */
+// TODO: replace hardcoded log strings
 public class HumanLogic extends PlayersLogic {
 
     private UserInterface userInterface;
@@ -93,8 +94,6 @@ public class HumanLogic extends PlayersLogic {
 
     @Override
     public void makeShootAt(PlayersLogic enemy) {
-        // TODO replace hardcoded language strings
-        int x = -1, y = -1;
         int repeat = 0;
         incrementTheNumberOfMovesPlayerDid();
         int cycleCounter = 0;

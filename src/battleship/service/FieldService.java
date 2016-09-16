@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * Stores the logic for operating with {@link battleship.entities.Field} objects
  */
+// TODO: remove hardcoded error messages
 public class FieldService {
     private Field field;
 

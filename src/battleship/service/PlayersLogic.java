@@ -3,15 +3,14 @@ package battleship.service;
 import battleship.ShipPlacementException;
 import battleship.entities.Coordinates;
 import battleship.entities.Player;
-import battleship.utils.BattleshipUtils;
 import battleship.utils.Logger;
 
-import java.io.Closeable;
 import java.util.Set;
 
 /**
  * Abstract class that describes the logic of some player.
  */
+// TODO: replace hardcoded error message and logger string
 public abstract class PlayersLogic implements PlayersActions {
     static Logger logger;
     protected Player player;
@@ -25,10 +24,6 @@ public abstract class PlayersLogic implements PlayersActions {
 
     public static void setLogger(Logger logger) {
         PlayersLogic.logger = logger;
-    }
-
-    protected static void closeStream(Closeable object) {
-        BattleshipUtils.closeStream(object);
     }
 
     public Set<Coordinates> getPlayersShootsList() {
@@ -88,7 +83,15 @@ public abstract class PlayersLogic implements PlayersActions {
         this.field = fieldService;
     }
 
+    final int checkDeckAtField(Coordinates coordinates) {
+        return field.hitShipAtField(coordinates);
+    }
+
     /*
+    protected static void closeStream(Closeable object) {
+        BattleshipUtils.closeStream(object);
+    }
+
     public final char getCell(int x, int y) {
         return field.getCell(x, y);
     }
@@ -107,7 +110,4 @@ public abstract class PlayersLogic implements PlayersActions {
         return (symbolInCell == Field.getEmptyCell() || symbolInCell == Field.getFilledCell());
     }
     */
-    final int checkDeckAtField(Coordinates coordinates) {
-        return field.hitShipAtField(coordinates);
-    }
 }

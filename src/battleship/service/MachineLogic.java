@@ -10,6 +10,7 @@ import java.util.Random;
 /**
  * This class contains methods for implementation some computer's logic in this game.
  */
+// TODO: remove hardcoded log strings
 public class MachineLogic extends PlayersLogic implements Runnable {
     private static final Random random = new Random();
 
@@ -54,33 +55,33 @@ public class MachineLogic extends PlayersLogic implements Runnable {
     public void placeShipByDeckNumber(int numberOfDecks) {
         for (int i = numberOfDecks - 1; i < 4; i++) {   // for each ship of this type (with same number of decks)
             boolean flag = true;
-            // TODO: remove strings and remove hardcoded fields sizes
-            String start, end = "";
+            Coordinates startingCoordinates = null;
+            Coordinates endingCoordinates = null;
             do {
-                int startX = random.nextInt(10);
-                int startY = random.nextInt(10);
-                int endX = 0, endY = 0;
+                int startX = random.nextInt(getFieldService().getField().getMaxXFieldSize());
+                int startY = random.nextInt(getFieldService().getField().getMaxYFieldSize());
+                startingCoordinates = new Coordinates(startX, startY);
+                int endX, endY;
                 boolean xDirection = random.nextBoolean();
-                start = String.valueOf((char) ('A' + startX)) + (startY + 1);
                 if (numberOfDecks != 1) {
                     if (xDirection) {
-                        end = String.valueOf((char) ('A' + startX + numberOfDecks - 1)) + (startY + 1);
                         endX = startX + numberOfDecks - 1;
                         endY = startY;
+                        endingCoordinates = new Coordinates(endX, endY);
                     }
                     else {
-                        end = String.valueOf((char) ('A' + startX)) + (startY + numberOfDecks);
                         endX = startX;
                         endY = startY + numberOfDecks - 1;
+                        endingCoordinates = new Coordinates(endX, endY);
                     }
                 }
 
                 try {
                     if (numberOfDecks != 1) {
                         flag = !putShipsAtField(
-                                new Coordinates(startX, startY),
+                                startingCoordinates,
                                 numberOfDecks,
-                                new Coordinates(endX, endY));
+                                endingCoordinates);
                     } else flag = !putShipsAtField(new Coordinates(startX, startY));
                 } catch (ShipPlacementException e) {
                     // ok, we cant place ship here. let's try again
@@ -90,8 +91,9 @@ public class MachineLogic extends PlayersLogic implements Runnable {
             } while (flag);
 
             if (numberOfDecks != 1)
-                logger.writeSynchronized("Computer put his ship with " + numberOfDecks + " decks at: (" + start.toUpperCase() + ", " + end.toUpperCase() + ").");
-            else logger.writeSynchronized("Computer put his ship with 1 deck at: (" + start.toUpperCase() + ").");
+                logger.writeSynchronized("Computer put his ship with " + numberOfDecks + " decks at: " +
+                        startingCoordinates + " -> " + endingCoordinates);
+            else logger.writeSynchronized("Computer put his ship with 1 deck at: " + startingCoordinates);
         }
     }
 
