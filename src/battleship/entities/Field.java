@@ -51,28 +51,11 @@ public class Field {
         return maxYFieldSize;
     }
 
-    public boolean[][] getField() {
+    public boolean[][] getFieldValues() {
         return field;
     }
 
     public List<Ship> getShips() {
         return ships;
     }
-
-    /* TODO: move to view
-    private void surroundWithDots(int x, int y) {
-        if (x > 0) {
-            if (y - 1 >= 0 && this.field[y - 1][x - 1] != filledCell && this.field[y - 1][x - 1] != hitedSign) this.field[y - 1][x - 1] = missedSign;
-            if (this.field[y][x - 1] != filledCell && this.field[y][x - 1] != hitedSign) this.field[y][x - 1] = missedSign;
-            if (y + 1 < 10 && this.field[y + 1][x - 1] != filledCell && this.field[y + 1][x - 1] != hitedSign) this.field[y + 1][x - 1] = missedSign;
-        }
-        if (x < 9) {
-            if (y - 1 >= 0 && this.field[y - 1][x + 1] != filledCell && this.field[y - 1][x + 1] != hitedSign) this.field[y - 1][x + 1] = missedSign;
-            if (this.field[y][x + 1] != filledCell && this.field[y][x + 1] != hitedSign) this.field[y][x + 1] = missedSign;
-            if (y + 1 < 10 && this.field[y + 1][x + 1] != filledCell && this.field[y + 1][x + 1] != hitedSign) this.field[y + 1][x + 1] = missedSign;
-        }
-        if (y - 1 >= 0 && this.field[y - 1][x] != filledCell && this.field[y - 1][x] != hitedSign) this.field[y - 1][x] = missedSign;
-        if (y + 1 < 10 && this.field[y + 1][x] != filledCell && this.field[y + 1][x] != hitedSign) this.field[y + 1][x] = missedSign;
-
-    }*/
 }

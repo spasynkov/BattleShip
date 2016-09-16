@@ -64,6 +64,18 @@ public class Logger implements Closeable {
         }
     }
 
+    public void writeSynchronized(String text) {
+        synchronized (this) {
+            write(text);
+        }
+    }
+
+    public void writeSynchronized(String text, Throwable error) {
+        synchronized (this) {
+            write(text, error);
+        }
+    }
+
     public void write() {
         try {
             writer.write("----------\n");

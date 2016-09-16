@@ -3,11 +3,14 @@ package battleship.controllers;
 import battleship.entities.Field;
 import battleship.entities.Player;
 import battleship.service.FieldService;
+import battleship.service.HumanLogic;
 import battleship.service.MachineLogic;
 import battleship.service.PlayersLogic;
 import battleship.utils.BattleshipUtils;
 import battleship.utils.Logger;
 import battleship.views.TextUserInterface;
+
+import java.io.IOException;
 
 /**
  * The loader of the game.
@@ -34,16 +37,18 @@ class GameLoader {
         // setting logger
         PlayersLogic.setLogger(log);
         BattleshipUtils.setLogger(log);
+        BattleshipUtils.createDefaultLanguagePack();
+        BattleshipUtils.loadLanguage(args);
 
         // creating players
-        Player user = new Player("User");
+        Player humanUser = new Player("User");
         Player computer = new Player("Computer");
 
         // TODO: get fields size and number of ships from properties
 
         // creating fields for every player
         Field usersField = new Field(10, 10, 10);
-        user.setField(usersField);
+        humanUser.setField(usersField);
         Field computersField = new Field(10, 10, 10);
         computer.setField(computersField);
 
@@ -52,28 +57,51 @@ class GameLoader {
         FieldService computerFieldService = new FieldService(computersField);
 
         // creating roles
-        TextUserInterface ui = new TextUserInterface(user, args);
-        MachineLogic ai = new MachineLogic(computer);
+        HumanLogic human = new HumanLogic(humanUser);
+        MachineLogic machine = new MachineLogic(computer);
 
-        ui.printWelcomeMessage();
+        // adding opportunity for roles to work with their fields
+        human.setField(userFieldService);
+        machine.setField(computerFieldService);
+
+        // creating user interface and injecting it in object that works with a human player
+        TextUserInterface userInterface = new TextUserInterface();
+        human.setUserInterface(userInterface);
+
+        // starting the game
+        userInterface.printWelcomeMessage();
+
 
         // asking user for names
-        String newName = ui.askForUserName();
-        if (!newName.isEmpty()) user.setName(newName);
-        newName = ui.askForComputersName();
-        if (!newName.isEmpty()) computer.setName(newName);
-        newName = null;
+        String newName;
+        try {       // asking for username
+            newName = userInterface.askForUserName();
+            if (!newName.isEmpty()) humanUser.setName(newName);
+        } catch (IOException e) {
+            log.write("Error while reading user's name.", e);
+        }
+
+        try {       // asking for computer's name
+            newName = userInterface.askForComputersName();
+            if (!newName.isEmpty()) computer.setName(newName);
+        } catch (IOException e) {
+            log.write("Error while reading computer's name.", e);
+        }
 
         // ships placement
-        ai.placeShips();
-        synchronized (log) {
-            log.write("Asking user to place his ships.");
-        }
-        ui.placeShips();
-        if (ai.isAlive()) {
-            ui.askToWait();
+        machine.placeShips();
+        log.writeSynchronized("Asking user to place his ships.");
+
+        userInterface.showRules();
+        userInterface.drawField(human, false);  // draw empty field
+        userInterface.showInputFormat();
+        human.placeShips();
+        log.writeSynchronized("All ships are placed by user.");
+
+        if (machine.isAlive()) {
+            userInterface.askToWait();
             try {
-                ai.waitForFinishingThread();
+                machine.waitForFinishingThread();
                 log.write("Computer's ships placement finished.");
             } catch (InterruptedException e) {
                 log.write("Computer's ships placement was interrupted by something.", e);
@@ -81,22 +109,34 @@ class GameLoader {
             }
         }
 
-        ui.gameStarted();
+        userInterface.gameStarted();
 
-        int counter = 0;
-        while (ui.isMoreShips() && ai.isMoreShips()) {
-            if (counter++ % 2 == 0) {
-                ui.drawAllFields(ai);
-                ui.makeShoot(ai);
-            }
-            else ai.makeShoot(ui);
+        boolean playersOrderSwitcher = true;
+        while (human.isMoreShips() && machine.isMoreShips()) {
+            if (playersOrderSwitcher) {
+                userInterface.drawAllFields(human, machine);
+                human.makeShootAt(machine);
+            } else machine.makeShootAt(human);
+            playersOrderSwitcher = !playersOrderSwitcher;
         }
 
-        ui.drawAllFields(ai);
-        if (ui.isMoreShips()) ui.won();
-        else ui.loose();
+        // game finished
+        userInterface.drawAllFields(human, machine);
+        // preparing stats
+        String playerName = humanUser.getName();
+        int theNumberOfMovesPlayerDid = human.getTheNumberOfMovesPlayerDid();
+        int theLongestStreak = human.getTheLongestStreak();
+        if (human.isMoreShips()) {
+            userInterface.won(theLongestStreak, theNumberOfMovesPlayerDid);
+            log.write("User \'" + playerName + "\' won. " +
+                    "User moves = " + theNumberOfMovesPlayerDid + ", the longest streak = " + theLongestStreak);
+        } else {
+            userInterface.loose(playerName, theLongestStreak, theNumberOfMovesPlayerDid);
+            log.write("User \'" + playerName + "\' loose. " +
+                    "User moves = " + theNumberOfMovesPlayerDid + ", the longest streak = " + theLongestStreak);
+        }
 
-        TextUserInterface.end();
+        userInterface.end();
         log.write("Program finished.");
         log.write();
         BattleshipUtils.closeStream(log);

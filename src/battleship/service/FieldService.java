@@ -5,9 +5,8 @@ import battleship.entities.Coordinates;
 import battleship.entities.Field;
 import battleship.entities.Ship;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Stores the logic for operating with {@link battleship.entities.Field} objects
@@ -26,7 +25,7 @@ public class FieldService {
         this.field = field;
         maxX = field.getMaxXFieldSize();
         maxY = field.getMaxYFieldSize();
-        fieldValues = field.getField();
+        fieldValues = field.getFieldValues();
     }
 
     public Field getField() {
@@ -37,7 +36,7 @@ public class FieldService {
         this.field = field;
         maxX = field.getMaxXFieldSize();
         maxY = field.getMaxYFieldSize();
-        fieldValues = field.getField();
+        fieldValues = field.getFieldValues();
     }
 
     /**
@@ -69,8 +68,8 @@ public class FieldService {
         return field.getShips().size();
     }
 
-    public Set<Coordinates> getEmptyCells() {
-        Set<Coordinates> result = new HashSet<>();
+    public List<Coordinates> getEmptyCells() {
+        List<Coordinates> result = new ArrayList<>();
 
         for (int i = 0; i < maxY; i++) {
             for (int j = 0; j < maxX; j++) {

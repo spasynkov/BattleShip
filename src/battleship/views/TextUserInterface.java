@@ -1,136 +1,58 @@
 package battleship.views;
 
 import battleship.ShipPlacementException;
-import battleship.entities.Player;
+import battleship.entities.Coordinates;
 import battleship.service.PlayersLogic;
 
-import java.io.*;
-import java.util.Enumeration;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
+import java.util.Set;
 
 import static battleship.utils.BattleshipUtils.closeStream;
+
 
 /**
  * This class is responsible for interaction with a user using console.
  */
-public class TextUserInterface {
-    private static final Map<String, String> LANG = new HashMap<>();
-    private static final BufferedReader CONSOLE_READER = new BufferedReader(new InputStreamReader(System.in));
+public class TextUserInterface implements UserInterface {
+    private final BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+    private Map<String, String> lang = new HashMap<>();
+    // coordinates values
+    // x coordinates should be of type char
+    private char[] xCoordinates = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
+    // y coordinates should be of type int
+    private int[] yCoordinates = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-    private String enemyName;
+    private char emptyCellSign = ' ';
+    private char missedCellSign = '.';
+    private char aliveShipCellSign = 'O';
+    private char deadShipCellSign = 'X';
 
-    /*TextUserInterface() {
-        super();
-        //createDefaultLanguagePack();
-        loadLanguage(null);
-    }*/
-
-    public TextUserInterface(Player player, String[] args) {
-        super(player);
-        createDefaultLanguagePack();
-        loadLanguage(args);
+    // setters
+    public void setLang(Map<String, String> lang) {
+        this.lang = lang;
     }
 
-    private static void createDefaultLanguagePack() {
-        LANG.put("welcome text", "Welcome in this game!");
-        LANG.put("Rules of placing ships", "The ships should be placed in a line horizontally or vertically with at least one cell between ships.\n" +
-                "Single-deck ships occupy one cell. There should be 4 single-deck ships, 3 double-deck ones (2 cells in a line),\n" +
-                "2 triple-deckers (3 cells in a line) and 1 with 4 decks (4 cells in a line).");
-        LANG.put("Show input format", "Let's use coordinates in format \"B4\".");
-        LANG.put("Ask for start point part1", "Please, enter starting coordinate for ship with ");
-        LANG.put("Ask for start point part2", " decks: ");
-        LANG.put("Ask for end point part1", "And now ending coordinate for ship with ");
-        LANG.put("Ask for end point part2", " decks, please: ");
-        LANG.put("Ask for single-deck", "Please, enter coordinate for single-decker ship: ");
-        LANG.put("Ask for another ship", "Now place another ship of same class.");
-        LANG.put("Abstract error", "Oops, something bad happens and we don't know why... Could you try again, please?");
-        LANG.put("Wait for computer ships", "Oh, you're so fast!\nPlease, give some time to your computer with finishing placing his ships.");
-        LANG.put("Fields names1", "             Your field                         ");
-        LANG.put("Fields names2", "\'s field");
-        LANG.put("Game started", "Ok, game is starting right now!\n\n");
-
-        logger.write("Saving " + LANG.size() + " language strings in file...");
-        Properties propertiesForSave = new Properties();
-        for (Map.Entry<String, String> map : LANG.entrySet()) {
-            propertiesForSave.setProperty(map.getKey(), (map.getValue()));
-        }
-        FileOutputStream os = null;
-        logger.write("Opening file for save.");
-        try {
-            os = new FileOutputStream("./language" + "_en");
-            propertiesForSave.store(os, null);
-            logger.write("Ok.");
-        } catch (IOException e) {
-            logger.write("There was an error while saving language strings to file", e);
-        } finally {
-            closeStream(os);
-        }
+    public void setXCoordinates(char[] xCoordinates) {
+        this.xCoordinates = xCoordinates;
     }
 
-    private static void loadLanguage(String[] args) {
-        String defaultLangCode = "_en"; // English by default
-        String langCode = defaultLangCode;
-        if (args != null) {
-            if (args.length == 1) {
-                if ("ru".equals(args[0].toLowerCase()) ||
-                        "rus".equals(args[0].toLowerCase()) ||
-                        "russian".equals(args[0].toLowerCase()) ||
-                        "русский".equals(args[0].toLowerCase()))
-                    langCode = "_ru";
-                if ("ua".equals(args[0].toLowerCase()) ||
-                        "ukr".equals(args[0].toLowerCase()) ||
-                        "ukrainian".equals(args[0].toLowerCase()) ||
-                        "українська".equals(args[0].toLowerCase()))
-                    langCode = "_ua";
-            }
-        }
-
-        // Check if file exists
-        File file = new File("./language" + langCode);
-        boolean fileExists = file.exists() && !file.isDirectory();
-
-        if (!fileExists) {
-            // If not exists - check if english language pack file exists
-            logger.write("Can't find " + file.getAbsolutePath() + " file. Trying to find default language pack...");
-            langCode = defaultLangCode;
-            file = new File("./language" + langCode);
-            if (file.exists() && !file.isDirectory()) {
-                fileExists = true;
-            } else {
-                logger.write("Can't load default language pack from " + file.getAbsolutePath() +
-                        ". Generating file from available strings...");
-                createDefaultLanguagePack();   // If still not - create it from template
-            }
-        } else {
-            logger.write("Loading language \"" + langCode.substring(1) + "\" from file...");
-            Properties propertiesFromFile = new Properties();
-            FileInputStream is = null;
-            logger.write("Opening file " + file.getAbsolutePath());
-            try {
-                is = new FileInputStream(file);
-                propertiesFromFile.load(is);
-                Enumeration languageStrings = propertiesFromFile.propertyNames();
-                while (languageStrings.hasMoreElements()) {
-                    String key = (String) languageStrings.nextElement();
-                    LANG.put(key, propertiesFromFile.getProperty(key));
-                }
-                logger.write("Ok.");
-            } catch (IOException e) {
-                logger.write("Failed!", e);
-            } finally {
-                closeStream(is);
-            }
-        }
+    public void setYCoordinates(int[] yCoordinates) {
+        this.yCoordinates = yCoordinates;
     }
 
-    public static void end() {
-        closeStream(CONSOLE_READER);
+    public void setCellsSigns(char emptyCellSign, char missedCellSign, char aliveShipCellSign, char deadShipCellSign) {
+        this.emptyCellSign = emptyCellSign;
+        this.missedCellSign = missedCellSign;
+        this.aliveShipCellSign = aliveShipCellSign;
+        this.deadShipCellSign = deadShipCellSign;
     }
 
     public void printWelcomeMessage() {
-        System.out.println(LANG.get("welcome text"));
+        System.out.println(lang.get("welcome text"));
     }
 
     /**
@@ -138,15 +60,11 @@ public class TextUserInterface {
      *
      * @return {@link String} name for user
      */
-    public String askForUserName() {
+    public String askForUserName() throws IOException {
         // TODO replace hardcoded strings
         String name = "";
-        try {
-            System.out.print("Enter your name (or leave it blank): ");
-            name = CONSOLE_READER.readLine();
-        } catch (Exception e) {
-            logger.write("Error while reading user's name.", e);
-        }
+        System.out.print("Enter your name (or leave it blank): ");
+        name = consoleReader.readLine();
         return name;
     }
 
@@ -155,175 +73,177 @@ public class TextUserInterface {
      *
      * @return {@link String} name for computer
      */
-    public String askForComputersName() {
+    public String askForComputersName() throws IOException {
         // TODO replace hardcoded strings
-        try {
-            System.out.print("Enter opponent's name (or leave it blank): ");
-            enemyName = CONSOLE_READER.readLine();
-            System.out.println("Ok.");
-        } catch (Exception e) {
-            logger.write("Error while reading computer's name.", e);
-        }
+        System.out.print("Enter opponent's name (or leave it blank): ");
+        String enemyName = consoleReader.readLine();
+        System.out.println("Ok.");
         return enemyName;
     }
 
-    public String getDesirableComputerName() {
-        return !enemyName.isEmpty() ? enemyName : null;
+    public void showRules() {
+        System.out.println(lang.get("Rules of placing ships"));
     }
 
-    public void placeShips() {
-        System.out.println(LANG.get("Rules of placing ships"));
-        drawField();
-        System.out.println(LANG.get("Show input format"));
-        for (int i = 4; i > 0; i--) {
-            placeShipByDeckNumber(i);
-        }
-        synchronized (logger) {
-            logger.write("All ships are placed by user. Cleaning field...");
-        }
-        clearField();
+    @Override
+    public void showInputFormat() {
+        System.out.println(lang.get("Show input format"));
     }
 
-    public void placeShipByDeckNumber(int numberOfDecks) {
+    public void gameStarted() {
+        System.out.println(lang.get("Game started"));
+    }
+
+    @Override
+    public Coordinates askForShipStartingCoordinate(int numberOfDecks) throws ShipPlacementException, IOException {
         String sNumberOfDecks = String.valueOf(numberOfDecks);
         if (numberOfDecks == 1) sNumberOfDecks = "single-";
-        String start = null;
-        String end = null;
-        for (int i = numberOfDecks - 1; i < 4; i++) {
-            boolean flag = true;
-            do {
-                if (numberOfDecks != 1)
-                    System.out.print(LANG.get("Ask for start point part1") + sNumberOfDecks + LANG.get("Ask for start point part2"));
-                else System.out.print(LANG.get("Ask for single-deck"));
 
-                try {
-                    start = CONSOLE_READER.readLine();
-                    int[] startXY = getCoordinatesFromString(start);
-                    int startX = startXY[0];
-                    int startY = startXY[1];
-                    if (numberOfDecks != 1) {
-                        System.out.print(LANG.get("Ask for end point part1") + sNumberOfDecks + LANG.get("Ask for end point part2"));
-                        end = CONSOLE_READER.readLine();
-                        int[] endXY = getCoordinatesFromString(end);
-                        int endX = endXY[0];
-                        int endY = endXY[1];
-                        flag = !putShipsAtField(startX, startY, numberOfDecks, endX, endY);
-                    } else flag = !putShipsAtField(startX, startY);
-                } catch (IOException e) {
-                    synchronized (logger) {
-                        logger.write("Exception while reading from console.", e);
-                    }
-                    // TODO add System.exit()
-                } catch (ShipPlacementException e) {
-                    System.out.println("Bad coordinates");
-                    // TODO обработать исключения
-                    synchronized (logger) {
-                        logger.write("Bad coordinates for " + sNumberOfDecks + "decker (" + start + ", " + end + ")", e);
-                    }
-                } catch (Exception e) {
-                    System.out.println(LANG.get("Abstract error"));
-                    synchronized (logger) {
-                        logger.write("Something bad happened while user was trying to place his ships.", e);
-                    }
-                }
-            } while (flag);
-            synchronized (logger) {
-                logger.write("Coordinates for user's " + sNumberOfDecks + "decker: (" +
-                        start.toUpperCase() + (numberOfDecks > 1 ? ", " + end.toUpperCase() : "") + ").");
-            }
-            drawField();
-            if (i != 3) System.out.println(LANG.get("Ask for another ship"));
-        }
+        if (numberOfDecks != 1)
+            System.out.print(lang.get("Ask for start point part1") + sNumberOfDecks + lang.get("Ask for start point part2"));
+        else System.out.print(lang.get("Ask for single-deck"));
+
+        return readCoordinatesFromConsole();
     }
 
-    public int beingAttacked(int x, int y) {
-        // TODO hardcoded strings
-        int result = checkDeckAtField(x, y);
-        System.out.print("Computer shoots at: " + (char)('A' + x) + (y + 1) + "... ");
-        logger.write("Computer shoots at: " + (char) ('A' + x) + (y + 1) + ".");
-        if (result == 0) {
-            System.out.println("But it missed. Your turn.");
-            logger.write("Computer misses.");
-            return result;
-        }
-        if (result > 0) {
-            if (result == 1) {
-                System.out.println("Computer hits your ship.");
-                logger.write("Computer hits ship.");
-                return result;
-            }
-            if (result == 2) {
-                System.out.println("Computer killed your ship.");
-                logger.write("Computer kills ship.");
-                return result;
-            }
-        }
-        if (result == -1) System.out.println("Computer already hit this cell. It should choose another one.");
-        return result;
+    @Override
+    public Coordinates askForShipEndingCoordinate(int numberOfDecks) throws ShipPlacementException, IOException {
+        String sNumberOfDecks = String.valueOf(numberOfDecks);
+        if (numberOfDecks == 1) sNumberOfDecks = "single-";
+
+        System.out.print(lang.get("Ask for end point part1") + sNumberOfDecks + lang.get("Ask for end point part2"));
+
+        return readCoordinatesFromConsole();
     }
 
-    public void makeShoot(PlayersLogic enemy) {
-        // TODO replace hardcoded language strings
-        int x = -1, y = -1;
-        int repeat = 1;
-        incrementTheNumberOfMovesPlayerDid();
-        int cycleCounter = 0;
-        do {
-            if (!enemy.isMoreShips()) break;
-            cycleCounter++;
-            if (x >= 0) drawAllFields(enemy);
-            System.out.print("Enter coordinates for shoot: ");
-            String sCoordinates = "";
-            try {
-                sCoordinates = CONSOLE_READER.readLine();
-                int[] coordinates = getCoordinatesFromString(sCoordinates);
-                x = coordinates[0];
-                y = coordinates[1];
-            } catch (ShipPlacementException e) {
-                logger.write("User input had bad coordinates for shoot: " + sCoordinates, e);
-            } catch (Exception e) {
-                logger.write("There was an error while getting user's coordinates for next shoot", e);
-            }
-            if (x >= 0 && !isAvailableForShoot(enemy.getCell(x, y))) {
-                System.out.println("You already shoot this cell. Try another one.");
-                x = -1;
-            }
-            if (x >= 0) {
-                repeat = enemy.beingAttacked(x, y);
-                logger.write("User shoots: " + (char) ('A' + x) + (y + 1) + ".");
-                switch (repeat) {
-                    case -1 : {
-                        System.out.println("You already shoot this cell1. Try another one.");
-                        logger.write("User already shoot this cell.");
-                        break;
-                    }
-                    case 0 : {
-                        System.out.println("You missed. Computer's turn.");
-                        logger.write("User misses.");
-                        break;
-                    }
-                    case 1 : {
-                        System.out.println("You hit computer's ship! Shoot again!");
-                        logger.write("User hits a ship.");
-                        break;
-                    }
-                    case 2 : {
-                        System.out.println("Great! You've just killed computer's ship!");
-                        logger.write("User kills computer's ship.");
-                        break;
-                    }
-                }
-            }
-        } while (repeat != 0);
-        if (cycleCounter > getTheLongestStreak()) setTheLongestStreak(cycleCounter);
+    public void askToWait() {
+        System.out.println(lang.get("Wait for computer ships"));
     }
 
-    public void won() {
-        super.won();
+    @Override
+    public void drawField(PlayersLogic player, boolean drawWithMarksAroundShips) {
+        boolean[][] field = player.getFieldService().getField().getFieldValues();
+        int rowsNumberOfTheField = field.length;
+
+        System.out.println(lineSeparator());
+
+        for (int row = rowsNumberOfTheField; row >= 0; row--) {
+            System.out.println(
+                    generateStringOfTheField(row, field, player.getPlayersShootsList(), drawWithMarksAroundShips));
+        }
+        System.out.println(lineSeparator());
+        System.out.println(columnsNames());
+    }
+
+    @Override
+    public void drawAllFields(PlayersLogic user, PlayersLogic enemy) {
+        String spaceBetweenFields = " ";
+
+        // printing player's names
+        System.out.println(lang.get("Fields names1") + enemy.getPlayerName() + lang.get("Fields names2"));
+
+        // printing line separators
+        System.out.println(lineSeparator() + spaceBetweenFields + lineSeparator());
+
+        boolean[][] userField = user.getFieldService().getField().getFieldValues();
+        boolean[][] enemyField = enemy.getFieldService().getField().getFieldValues();
+        int rowsNumberOfTheField = userField.length;
+
+        // printing fields for each player line by line
+        for (int row = rowsNumberOfTheField; row >= 0; row--) {
+            System.out.println(generateStringOfTheField(row, userField, enemy.getPlayersShootsList(), false) +
+                    spaceBetweenFields +
+                    generateStringOfTheField(row, enemyField, user.getPlayersShootsList(), false));
+        }
+
+        System.out.println(lineSeparator() + spaceBetweenFields + lineSeparator());
+        System.out.println(columnsNames() + spaceBetweenFields + columnsNames());
+    }
+
+    @Override
+    public void showEnemyMove(Coordinates coordinates) {
+        System.out.print(
+                "Computer shoots at: " + xCoordinates[coordinates.getX()] + yCoordinates[coordinates.getY()] + "... ");
+    }
+
+    @Override
+    public void enemyMissed(Coordinates coordinates) {
+        System.out.println("But it missed. Your turn.");
+    }
+
+    @Override
+    public void enemyInjuredYourShip(Coordinates coordinates) {
+        System.out.println("Computer hits your ship.");
+    }
+
+    @Override
+    public void enemyDestroyedYourShip(Coordinates coordinates) {
+        System.out.println("Computer killed your ship.");
+    }
+
+    @Override
+    public Coordinates askCoordinatesForShoot() throws ShipPlacementException, IOException {
+        System.out.print("Enter coordinates for shoot: ");
+        return readCoordinatesFromConsole();
+    }
+
+    @Override
+    public void askToRepeatLastAction() {
+        System.out.println("Ooops... Something bad happened. Could you please repeat your last action?");
+    }
+
+    @Override
+    public void suchShootHasBeenMadeAlready(Coordinates coordinates) {
+        System.out.println("You already shoot this cell!. Try another one.");
+    }
+
+    @Override
+    public void userMissed(Coordinates coordinates) {
+        System.out.println("You missed. Computer's turn.");
+    }
+
+    @Override
+    public void userInjuredEnemysShip(Coordinates coordinates) {
+        System.out.println("You hit computer's ship! Shoot again!");
+    }
+
+    @Override
+    public void userDestroyedEnemysShip(Coordinates coordinates) {
+        System.out.println("Great! You've just killed computer's ship!");
+    }
+
+    public void won(int theLongestStreak, int theNumberOfMovesPlayerDid) {
         // TODO replace hardcoded language strings
         System.out.println("You won!");
-        System.out.println("You did it in " + getTheNumberOfMovesPlayerDid() + " moves.");
-        System.out.println("The longest streak of successful hits you did is " + getTheLongestStreak() + " hits.");
+        System.out.println("You did it in " + theNumberOfMovesPlayerDid + " moves.");
+        System.out.println("The longest streak of successful hits you did is " + theLongestStreak + " hits.");
+    }
+
+    public void loose(String playerName, int theLongestStreak, int theNumberOfMovesPlayerDid) {
+        // TODO replace hardcoded language strings
+        System.out.println(playerName + " loose.");
+        System.out.println("You did only " + theNumberOfMovesPlayerDid + " moves.");
+        System.out.println("The longest streak of successful hits you did is " + theLongestStreak + " hits.");
+    }
+
+    public void end() {
+        closeStream(consoleReader);
+    }
+
+    private Coordinates readCoordinatesFromConsole() throws ShipPlacementException, IOException {
+        Coordinates result = null;
+        try {
+            result = getCoordinatesFromString(consoleReader.readLine());
+        } catch (ShipPlacementException e) {
+            System.out.println("Bad coordinates");
+            throw e;
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
+            System.out.println(lang.get("Abstract error"));
+            throw e;
+        }
+        return result;
     }
 
     /**
@@ -331,17 +251,14 @@ public class TextUserInterface {
      * (equals to "B4". horizontal: A->0, B->1, ...; vertical: 1->0, 2->1, ...)
      * Or will throw an exception if coordinates are extremely wrong.
      */
-    private int[] getCoordinatesFromString(String sCoordinates) throws ShipPlacementException {
+    private Coordinates getCoordinatesFromString(String sCoordinates) throws ShipPlacementException {
         if (sCoordinates == null || sCoordinates.isEmpty()) throw new ShipPlacementException("Empty string");
-        int[] result;
+        Coordinates result;
         if (sCoordinates.length() == 2 || sCoordinates.length() == 3) {
             try {
                 char first = sCoordinates.toUpperCase().charAt(0);
                 int second = Integer.parseInt(sCoordinates.substring(1));
-                if (first >= 'A' && first <= 'J' &&
-                        second > 0 && second < 11) {
-                    result = new int[]{first - 'A', second - 1};
-                } else throw new ShipPlacementException("Coordinates out of range");
+                result = new Coordinates(getCoordinateIndex(first), getCoordinateIndex(second));
             } catch (NumberFormatException e) {
                 throw new ShipPlacementException("Number format failed");
             }
@@ -349,61 +266,96 @@ public class TextUserInterface {
         return result;
     }
 
+    private int getCoordinateIndex(char coordinate) throws ShipPlacementException {
+        for (int i = 0; i < xCoordinates.length; i++) {
+            if (xCoordinates[i] == coordinate) {
+                return i;
+            }
+        }
+        throw new ShipPlacementException("Coordinates are wrong or out of range");
+    }
+
+    private int getCoordinateIndex(int coordinate) throws ShipPlacementException {
+        for (int i = 0; i < yCoordinates.length; i++) {
+            if (yCoordinates[i] == coordinate) {
+                return i;
+            }
+        }
+        throw new ShipPlacementException("Coordinates are wrong or out of range");
+    }
+
+    private boolean ifThereAreShipsAround(boolean[][] field, Coordinates coordinates) {
+        for (int i = coordinates.getY() - 1; i < coordinates.getY() + 1; i++) {
+            for (int j = coordinates.getX() - 1; j < coordinates.getX() + 1; j++) {
+                if (i >= 0 && j >= 0 && i < yCoordinates.length && j < xCoordinates.length) {
+                    if (field[i][j]) return true;   // return true if there is a ship (boolean value is true)
+                }
+            }
+        }
+        return false;
+    }
+
     /**
-     * Call this if you need to draw full field.
+     * Constructs single line separator
+     *
+     * @return {@link String} of spaces and minuses that depends of the field's width
      */
-    private void drawField() {
-        System.out.println("   --------------------------------");
-        for (int i = 9; i >= 0; i--) {
-            if (i != 9) System.out.print(" ");
-            System.out.print((i + 1) + " |");
-            for (int j = 0; j < 10; j++) {
-                System.out.print(" " + getCell(j, i) + " ");
-            }
-            System.out.print("|");
-            System.out.println();
+    private String lineSeparator() {
+        StringBuilder sb = new StringBuilder("   ");
+        for (int i = 0; i < xCoordinates.length; i++) {
+            sb.append("---");
         }
-        System.out.println("   --------------------------------");
-        System.out.println("     A  B  C  D  E  F  G  H  I  J");
+        return sb.toString();
     }
 
-    public void drawAllFields(PlayersLogic enemy) {
-        System.out.println(LANG.get("Fields names1") + enemy.getPlayerName() + LANG.get("Fields names2"));
-        System.out.println("   --------------------------------    --------------------------------");
-        for (int i = 9; i >= 0; i--) {
-            String number;
-            if (i == 9) number = String.valueOf(i + 1);
-            else number = " " + String.valueOf(i + 1);
-            StringBuilder sb = new StringBuilder();
-            sb.append(number).append(" |");
-            for (int j = 0; j < 10; j++) {
-                sb.append(" ").append(getCell(j, i)).append(" ");
-            }
-            sb.append("| ").append(number).append(" |");
-            for (int j = 0; j < 10; j++) {
-                sb.append(" ").append(enemy.getCellSafe(j, i)).append(" ");
-            }
-            sb.append("|");
-            System.out.println(sb);
+    /**
+     * Constructs the string with column names of the field
+     *
+     * @return {@link String} of spaces and column names
+     */
+    private String columnsNames() {
+        StringBuilder sb = new StringBuilder("   ");
+        for (char c : xCoordinates) {
+            sb.append("  ").append(c);
         }
-        System.out.println("   --------------------------------    --------------------------------");
-        System.out.println("     A  B  C  D  E  F  G  H  I  J        A  B  C  D  E  F  G  H  I  J");
+        return sb.toString();
     }
 
-    public void askToWait() {
-        System.out.println(LANG.get("Wait for computer ships"));
-    }
+    private String generateStringOfTheField(
+            int rowIndex,
+            boolean[][] fieldValues,
+            Set<Coordinates> shootsPlayerDid,
+            boolean drawWithMarksAroundEveryShip) {
 
-    public void gameStarted() {
-        System.out.println(LANG.get("Game started"));
-    }
+        StringBuilder result = new StringBuilder();
 
-    public void loose() {
-        // TODO replace hardcoded language strings
-        System.out.println(getPlayerName() + " loose.");
-        logger.write("User \'" + getPlayerName() + "\' loose. User moves = " + getTheNumberOfMovesPlayerDid() + ", the longest streak = " + getTheLongestStreak());
-        System.out.println("You did only " + getTheNumberOfMovesPlayerDid() + " moves.");
-        System.out.println("The longest streak of successful hits you did is " + getTheLongestStreak() + " hits.");
-
+        int rowsNumberOfTheField = fieldValues.length;
+        int columnsNumberOfTheField = fieldValues[0].length;
+        if (rowIndex != rowsNumberOfTheField) System.out.print(" ");
+        result.append(yCoordinates[rowIndex]).append(" |");
+        for (int j = 0; j < columnsNumberOfTheField; j++) {
+            Coordinates currentCoordinates = new Coordinates(j, rowIndex);
+            boolean cellValue = fieldValues[rowIndex][j];
+            if (cellValue) {                                        // if this cell have a ship in it
+                if (shootsPlayerDid.contains(currentCoordinates)) {       // if we shoot here already
+                    result.append(" ").append(deadShipCellSign).append(" ");
+                } else {                                            // if we didn't shoot in this cell yet
+                    result.append(" ").append(aliveShipCellSign).append(" ");
+                }
+            } else {                                                // if this cell DON'T have a ship in it
+                if (shootsPlayerDid.contains(currentCoordinates)) {       // if we shoot here already
+                    result.append(" ").append(missedCellSign).append(" ");
+                } else {                                            // if we didn't shoot in this cell yet
+                    if (drawWithMarksAroundEveryShip && ifThereAreShipsAround(fieldValues, currentCoordinates)) {
+                        // if need marks around every ship and there is a ship around of these coordinates
+                        result.append(" ").append(missedCellSign).append(" ");
+                    } else {    // otherwise
+                        result.append(" ").append(emptyCellSign).append(" ");
+                    }
+                }
+            }
+        }
+        result.append("|");
+        return result.toString();
     }
 }

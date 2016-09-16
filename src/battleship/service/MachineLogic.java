@@ -1,8 +1,10 @@
 package battleship.service;
 
 import battleship.ShipPlacementException;
+import battleship.entities.Coordinates;
 import battleship.entities.Player;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -45,16 +47,14 @@ public class MachineLogic extends PlayersLogic implements Runnable {
         for (int i = 4; i > 0; i--) {
             placeShipByDeckNumber(i);
         }
-        synchronized (logger) {
-            logger.write("All computer's ships were placed. Cleaning field...");
-        }
-        clearField();
+        logger.writeSynchronized("All computer's ships were placed. Cleaning field...");
     }
 
     @Override
     public void placeShipByDeckNumber(int numberOfDecks) {
         for (int i = numberOfDecks - 1; i < 4; i++) {   // for each ship of this type (with same number of decks)
             boolean flag = true;
+            // TODO: remove strings and remove hardcoded fields sizes
             String start, end = "";
             do {
                 int startX = random.nextInt(10);
@@ -77,36 +77,32 @@ public class MachineLogic extends PlayersLogic implements Runnable {
 
                 try {
                     if (numberOfDecks != 1) {
-                        flag = !putShipsAtField(startX, startY, numberOfDecks, endX, endY);
-                    } else flag = !putShipsAtField(startX, startY);
+                        flag = !putShipsAtField(
+                                new Coordinates(startX, startY),
+                                numberOfDecks,
+                                new Coordinates(endX, endY));
+                    } else flag = !putShipsAtField(new Coordinates(startX, startY));
                 } catch (ShipPlacementException e) {
                     // ok, we cant place ship here. let's try again
                 } catch (Exception e) {
-                    synchronized (logger) {
-                        logger.write("Something bad happened while placing computer's ships.", e);
-                    }
+                    logger.writeSynchronized("Something bad happened while placing computer's ships.", e);
                 }
             } while (flag);
 
-            synchronized (logger) {
-                if (numberOfDecks != 1)
-                    logger.write("Computer put his ship with " + numberOfDecks + " decks at: (" + start.toUpperCase() + ", " + end.toUpperCase() + ").");
-                else logger.write("Computer put his ship with 1 deck at: (" + start.toUpperCase() + ").");
-            }
+            if (numberOfDecks != 1)
+                logger.writeSynchronized("Computer put his ship with " + numberOfDecks + " decks at: (" + start.toUpperCase() + ", " + end.toUpperCase() + ").");
+            else logger.writeSynchronized("Computer put his ship with 1 deck at: (" + start.toUpperCase() + ").");
         }
     }
 
     @Override
-    public void makeShoot(PlayersLogic enemy) {
-        int x, y;
+    public void makeShootAt(PlayersLogic enemy) {
         boolean repeat;
         do {
-            if (!enemy.isMoreShips()) break;
-            int[][] cells = enemy.getEmptyCells();
-            int cell = random.nextInt(cells.length);
-            x = cells[cell][0];
-            y = cells[cell][1];
-            repeat = enemy.beingAttacked(x, y) != 0;
+            if (!isMoreShips()) break;
+            List<Coordinates> cells = enemy.getFieldService().getEmptyCells();
+            int randomCellNumber = random.nextInt(cells.size());
+            repeat = enemy.attackedAt(cells.get(randomCellNumber)) != 0;
             try {
                 Thread.sleep(2000L);
             } catch (InterruptedException e) {
@@ -116,7 +112,7 @@ public class MachineLogic extends PlayersLogic implements Runnable {
     }
 
     @Override
-    public int beingAttacked(int x, int y) {
-        return checkDeckAtField(x, y);
+    public int attackedAt(Coordinates coordinates) {
+        return checkDeckAtField(coordinates);
     }
 }

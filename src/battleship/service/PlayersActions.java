@@ -1,5 +1,7 @@
 package battleship.service;
 
+import battleship.entities.Coordinates;
+
 /**
  * The main logic of every player in the game
  */
@@ -28,12 +30,19 @@ public interface PlayersActions {
      * <b>2</b> - if there is last deck of a ship. The ship is completely destroyed now <i>(success)</i><br>
      * <b>-1</b> - if these coordinates were already attacked before
      */
-    int beingAttacked(int x, int y);
+    int attackedAt(Coordinates coordinates);
 
     /**
      * Makes a shoot at enemy's field
      *
      * @param enemy particular {@link PlayersLogic} to shoot at
      */
-    void makeShoot(PlayersLogic enemy);
+    void makeShootAt(PlayersLogic enemy);
+
+    /**
+     * Checks if player have at least one ship "alive"
+     *
+     * @return <code>true</code> if there are some ships, or <code>false</code> if all player's ships are destroyed
+     */
+    boolean isMoreShips();
 }
