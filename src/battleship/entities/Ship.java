@@ -78,4 +78,27 @@ public class Ship {
         return "(" + startX + ", " + startY + ") -> " + length +
                 ", direction: " + (isHorizontal ? "x; " : "y; ");
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Ship ship = (Ship) o;
+
+        if (startX != ship.startX) return false;
+        if (startY != ship.startY) return false;
+        if (length != ship.length) return false;
+        return isHorizontal == ship.isHorizontal;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = startX;
+        result = 31 * result + startY;
+        result = 31 * result + length;
+        result = 31 * result + (isHorizontal ? 1 : 0);
+        return result;
+    }
 }
