@@ -14,6 +14,19 @@ public class ShipService {
     /**
      * Creates the ship and return link at it
      *
+     * @param startX starting X coordinate of a ship. Should be a positive number
+     * @param startY starting Y coordinate of a ship. Should be a positive number
+     * @return the link for a particular {@link Ship} that just created
+     * @throws ShipPlacementException if bad coordinates would be found
+     */
+    public static Ship createShip(int startX, int startY) throws ShipPlacementException {
+        checkCoordinates(startX, startY);
+        return new Ship(startX, startY);
+    }
+
+    /**
+     * Creates the ship and return link at it
+     *
      * @param startX        starting X coordinate of a ship. Should be a positive number
      * @param startY        starting Y coordinate of a ship. Should be a positive number
      * @param numberOfDecks number of decks that ship will have. Should be a positive number
@@ -39,31 +52,18 @@ public class ShipService {
         return new Ship(startX, startY, numberOfDecks, xDirection);
     }
 
-    /**
-     * Creates the ship and return link at it
-     *
-     * @param startX starting X coordinate of a ship. Should be a positive number
-     * @param startY starting Y coordinate of a ship. Should be a positive number
-     * @return the link for a particular {@link Ship} that just created
-     * @throws ShipPlacementException if bad coordinates would be found
-     */
-    public static Ship createShip(int startX, int startY) throws ShipPlacementException {
-        checkCoordinates(startX, startY);
-        return new Ship(startX, startY);
-    }
-
     // Could be redundant because we did this check in FieldService class
     private static void checkCoordinates(int startX, int startY, int numberOfDecks, int endX, int endY)
             throws ShipPlacementException {
 
-        if (startX < 1 || startY < 1 || endX < 1 || endY < 1 || numberOfDecks < 1) {
+        if (startX < 0 || startY < 0 || endX < 0 || endY < 0 || numberOfDecks < 1) {
             throw new ShipPlacementException("Coordinates for ship and decks number should be a positive value.");
         }
     }
 
     // Could be redundant because we did this check in FieldService class
     private static void checkCoordinates(int startX, int startY) throws ShipPlacementException {
-        if (startX < 1 || startY < 1) {
+        if (startX < 0 || startY < 0) {
             throw new ShipPlacementException("Coordinates for ship and decks number should be a positive value.");
         }
     }
@@ -84,7 +84,8 @@ public class ShipService {
 
     /**
      * Returns the full set of calculated coordinates that ship takes at the battlefield.
-     * [deck number] [x, y]
+     * @param ship the ship for which to get it's coordinates
+     * @return {@link Set} of {@link Coordinates} this ships takes at player's field
      */
     public static Set<Coordinates> getCoordinatesOfTheShip(Ship ship) {
         int shipLength = ship.getLength();

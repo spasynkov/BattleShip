@@ -11,21 +11,15 @@ import java.util.Properties;
  */
 public class BattleshipUtils {
     private static final Map<String, String> LANG = new HashMap<>();
+
     private static Logger logger;
+
+    public static Map<String, String> getLANG() {
+        return LANG;
+    }
 
     public static void setLogger(Logger logger) {
         BattleshipUtils.logger = logger;
-    }
-
-    public static void closeStream(Closeable stream) {
-        if (stream != null) {
-            try {
-                stream.close();
-                if (!(stream instanceof Logger)) logger.write(stream.getClass().getName() + " closed.");
-            } catch (IOException e) {
-                //e.printStackTrace();
-            }
-        }
     }
 
     public static void createDefaultLanguagePack() {
@@ -116,6 +110,17 @@ public class BattleshipUtils {
                 logger.write("Failed!", e);
             } finally {
                 closeStream(is);
+            }
+        }
+    }
+
+    public static void closeStream(Closeable stream) {
+        if (stream != null) {
+            try {
+                stream.close();
+                if (!(stream instanceof Logger)) logger.write(stream.getClass().getName() + " closed.");
+            } catch (IOException e) {
+                //e.printStackTrace();
             }
         }
     }

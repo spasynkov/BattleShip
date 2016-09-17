@@ -67,6 +67,7 @@ class GameLoader {
         // creating user interface and injecting it in object that works with a human player
         TextUserInterface userInterface = new TextUserInterface();
         human.setUserInterface(userInterface);
+        userInterface.setLang(BattleshipUtils.getLANG());
 
         // starting the game
         userInterface.printWelcomeMessage();
@@ -89,7 +90,7 @@ class GameLoader {
         }
 
         // ships placement
-        machine.placeShips();
+        //machine.placeShips();
         log.writeSynchronized("Asking user to place his ships.");
 
         userInterface.showRules();

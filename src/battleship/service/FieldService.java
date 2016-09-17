@@ -135,7 +135,7 @@ public class FieldService {
             throws ShipPlacementException {
 
         if (startX >= maxX || startY >= maxY || endX >= maxX || endY >= maxY ||
-                startX <= 0 || startY <= 0 || endX <= 0 || endY <= 0) {
+                startX < 0 || startY < 0 || endX < 0 || endY < 0) {
             throw new ShipPlacementException("Coordinates out of range");
         }
         // TODO: check this place! could be some lags here

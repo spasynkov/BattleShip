@@ -26,7 +26,7 @@ public class TextUserInterface implements UserInterface {
     // y coordinates should be of type int
     private int[] yCoordinates = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-    private char emptyCellSign = ' ';
+    private char emptyCellSign = '_';
     private char missedCellSign = '.';
     private char aliveShipCellSign = 'O';
     private char deadShipCellSign = 'X';
@@ -127,7 +127,7 @@ public class TextUserInterface implements UserInterface {
 
         System.out.println(lineSeparator());
 
-        for (int row = rowsNumberOfTheField; row >= 0; row--) {
+        for (int row = rowsNumberOfTheField - 1; row >= 0; row--) {
             System.out.println(
                     generateStringOfTheField(row, field, player.getPlayersShootsList(), drawWithMarksAroundShips));
         }
@@ -301,7 +301,7 @@ public class TextUserInterface implements UserInterface {
      * @return {@link String} of spaces and minuses that depends of the field's width
      */
     private String lineSeparator() {
-        StringBuilder sb = new StringBuilder("   ");
+        StringBuilder sb = new StringBuilder("    ");
         for (int i = 0; i < xCoordinates.length; i++) {
             sb.append("---");
         }
@@ -331,7 +331,8 @@ public class TextUserInterface implements UserInterface {
 
         int rowsNumberOfTheField = fieldValues.length;
         int columnsNumberOfTheField = fieldValues[0].length;
-        if (rowIndex != rowsNumberOfTheField) System.out.print(" ");
+        if (rowIndex < 9) System.out.print(" ");
+        // System.out.print(generateSpacesForLinesIndexDigit(rowIndex));
         result.append(yCoordinates[rowIndex]).append(" |");
         for (int j = 0; j < columnsNumberOfTheField; j++) {
             Coordinates currentCoordinates = new Coordinates(j, rowIndex);
@@ -357,5 +358,20 @@ public class TextUserInterface implements UserInterface {
         }
         result.append("|");
         return result.toString();
+    }
+
+    private String generateSpacesForLinesIndexDigit(int rowIndex) {
+        StringBuilder sb = new StringBuilder();
+        byte digit = 1;
+        for (byte i = 1; i < 100; i++) {
+            if (rowIndex < 1 * Math.pow(i, 10)) {
+                digit = i;
+                break;
+            }
+        }
+        for (int i = 0; i < digit; i++) {
+            sb.append(" ");
+        }
+        return sb.toString();
     }
 }
