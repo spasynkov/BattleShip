@@ -38,17 +38,32 @@ public class ShipService {
     public static Ship createShip(int startX, int startY, int numberOfDecks, int endX, int endY)
             throws ShipPlacementException {
 
-        checkCoordinates(startX, startY, numberOfDecks, endX, endY);
-        if (numberOfDecks == 1) {
+        if (numberOfDecks == 1 ||
+                (startX == endX && startY == endY)) {
             return createShip(startX, startY);
         }
 
+        checkCoordinates(startX, startY, numberOfDecks, endX, endY);
         boolean xDirection;
-        if (startX == startY) {
+        //
+        if (startX == endX) {
+            // if this ship should be horizontal then it's Y coordinates should be differ at number of decks -1
+            if (Math.abs(startY - endY) != numberOfDecks - 1) {
+                // we got inclined ship by Y coordinate
+                throw new ShipPlacementException("Ships could be placed only at horizontal or vertical lines.");
+            }
             xDirection = false;
         } else if (startY == endY) {
+            // similar idea for vertical ships
+            if (Math.abs(startX - endX) != numberOfDecks - 1) {
+                // we got inclined ship by X coordinate
+                throw new ShipPlacementException("Ships could be placed only at horizontal or vertical lines.");
+            }
             xDirection = true;
-        } else throw new ShipPlacementException("Ships could be placed only at horizontal or vertical lines.");
+        } else {
+            // here we got right ship, but placed by diagonal (e.g. (0;0) - (3;3))
+            throw new ShipPlacementException("Ships could be placed only at horizontal or vertical lines.");
+        }
         return new Ship(startX, startY, numberOfDecks, xDirection);
     }
 
@@ -71,8 +86,12 @@ public class ShipService {
     /**
      * Oh, shi..! We're in trouble now!
      */
-    public static void hit(Ship ship) {
-        ship.setSafeDecks(ship.getSafeDecks() - 1);
+    public static void hit(Ship ship) throws RuntimeException {
+        int safeDecks = ship.getSafeDecks();
+        if (safeDecks == 0) {
+            throw new RuntimeException("No more alive decks left in this ship");
+        }
+        ship.setSafeDecks(safeDecks - 1);
     }
 
     /**
@@ -93,14 +112,14 @@ public class ShipService {
 
         int constantIndex;    // the same number for coordinates pair. X if ship is horizontal, or Y if it's not
         if (ship.isHorizontal()) {
-            constantIndex = ship.getStartX();
-            for (int i = ship.getStartY(); i < ship.getStartY() + shipLength; i++) {
-                result.add(new Coordinates(constantIndex, i));
-            }
-        } else {
             constantIndex = ship.getStartY();
             for (int i = 0; i < ship.getStartX() + shipLength; i++) {
                 result.add(new Coordinates(i, constantIndex));
+            }
+        } else {
+            constantIndex = ship.getStartX();
+            for (int i = ship.getStartY(); i < ship.getStartY() + shipLength; i++) {
+                result.add(new Coordinates(constantIndex, i));
             }
         }
         return result;
