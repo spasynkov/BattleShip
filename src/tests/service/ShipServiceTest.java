@@ -219,9 +219,21 @@ public class ShipServiceTest {
     @Test
     public void getCoordinatesOfTheShipWithOneDeckTest() throws Exception {
         ship = new Ship(startX, startY);
-        assertNotNull(ShipService.getCoordinatesOfTheShip(ship));
-        assertFalse(ShipService.getCoordinatesOfTheShip(ship).contains(null));
-        assertTrue(ShipService.getCoordinatesOfTheShip(ship).contains(new Coordinates(startX, startY)));
+        Set<Coordinates> actualListOfCoordinates = ShipService.getCoordinatesOfTheShip(ship);
+        assertNotNull(actualListOfCoordinates);
+        assertFalse(actualListOfCoordinates.contains(null));
+
+        Coordinates expectedCoordinates = new Coordinates(startX, startY);
+        assertTrue(actualListOfCoordinates.contains(expectedCoordinates));
+
+        assertTrue(actualListOfCoordinates.size() == 1);
+
+        // check if it contains some other values
+        Set<Coordinates> clone = new HashSet<>(actualListOfCoordinates);
+        Set<Coordinates> expectedListOfCoordinates = new HashSet<>();
+        expectedListOfCoordinates.add(expectedCoordinates);
+        assertFalse(actualListOfCoordinates.retainAll(expectedListOfCoordinates));
+        assertEquals(clone, actualListOfCoordinates);
     }
 
     @Test
@@ -238,6 +250,8 @@ public class ShipServiceTest {
         }
 
         assertTrue(actualListOfCoordinates.containsAll(expectedListOfCoordinates));
+
+        assertTrue(actualListOfCoordinates.size() == numberOfDecks);
 
         // check if it contains some other values
         Set<Coordinates> clone = new HashSet<>(actualListOfCoordinates);
@@ -259,6 +273,8 @@ public class ShipServiceTest {
         }
 
         assertTrue(actualListOfCoordinates.containsAll(expectedListOfCoordinates));
+
+        assertTrue(actualListOfCoordinates.size() == numberOfDecks);
 
         // check if it contains some other values
         Set<Coordinates> clone = new HashSet<>(actualListOfCoordinates);
