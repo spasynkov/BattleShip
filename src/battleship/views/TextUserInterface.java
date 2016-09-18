@@ -150,7 +150,7 @@ public class TextUserInterface implements UserInterface {
         int rowsNumberOfTheField = userField.length;
 
         // printing fields for each player line by line
-        for (int row = rowsNumberOfTheField; row >= 0; row--) {
+        for (int row = rowsNumberOfTheField - 1; row >= 0; row--) {
             System.out.println(generateStringOfTheField(row, userField, enemy.getPlayersShootsList(), false) +
                     spaceBetweenFields +
                     generateStringOfTheField(row, enemyField, user.getPlayersShootsList(), false));
