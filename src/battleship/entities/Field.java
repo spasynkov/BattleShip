@@ -19,10 +19,12 @@ public class Field {
      * Max length of the field by Y
      */
     private final int maxYFieldSize;
+
     /**
      * Every ship instance with it's coordinates
      */
     private final List<Ship> ships;
+
     /**
      * The field itself.
      * Every cell could be filled or empty. Filled cell (true) means that its a ship here (or ship's part, a deck).

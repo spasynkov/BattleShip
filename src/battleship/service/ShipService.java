@@ -64,7 +64,7 @@ public class ShipService {
             // here we got right ship, but placed by diagonal (e.g. (0;0) - (3;3))
             throw new ShipPlacementException("Ships could be placed only at horizontal or vertical lines.");
         }
-        return new Ship(startX, startY, numberOfDecks, xDirection);
+        return new Ship(Math.min(startX, endX), Math.min(startY, endY), numberOfDecks, xDirection);
     }
 
     // Could be redundant because we did this check in FieldService class

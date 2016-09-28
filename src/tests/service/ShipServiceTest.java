@@ -27,7 +27,7 @@ public class ShipServiceTest {
     private int numberOfDecks = 4;
     private int endX = startX;
     private int endY = startY + numberOfDecks - 1;
-    private Random random = new Random(System.currentTimeMillis());
+    private Random random = new Random();
 
     @Test
     public void createShipWithOneDeckTest() throws ShipPlacementException {

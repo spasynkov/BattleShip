@@ -23,10 +23,12 @@ public class FieldService {
     }
 
     public FieldService(Field field) {
-        this.field = field;
-        maxX = field.getMaxXFieldSize();
-        maxY = field.getMaxYFieldSize();
-        fieldValues = field.getFieldValues();
+        if (field != null) {
+            this.field = field;
+            maxX = field.getMaxXFieldSize();
+            maxY = field.getMaxYFieldSize();
+            fieldValues = field.getFieldValues();
+        }
     }
 
     public Field getField() {
@@ -34,20 +36,11 @@ public class FieldService {
     }
 
     public void setField(Field field) {
-        this.field = field;
-        maxX = field.getMaxXFieldSize();
-        maxY = field.getMaxYFieldSize();
-        fieldValues = field.getFieldValues();
-    }
-
-    /**
-     * Clears the field
-     */
-    public void clear() {
-        for (int i = 0; i < maxY; i++) {
-            for (int j = 0; j < maxX; j++) {
-                fieldValues[i][j] = false;
-            }
+        if (field != null) {
+            this.field = field;
+            maxX = field.getMaxXFieldSize();
+            maxY = field.getMaxYFieldSize();
+            fieldValues = field.getFieldValues();
         }
     }
 
@@ -57,16 +50,6 @@ public class FieldService {
 
     public boolean getCell(int x, int y) {
         return fieldValues[y][x];
-    }
-
-    public boolean[] getLine(int row) {
-        boolean[] result = new boolean[maxX];
-        System.arraycopy(fieldValues[row], 0, result, 0, result.length);
-        return result;
-    }
-
-    public int getShipsNumber() {
-        return field.getShips().size();
     }
 
     public List<Coordinates> getEmptyCells() {
@@ -211,6 +194,27 @@ public class FieldService {
     }
 
     /**
+     * Clears the field
+     */
+    public void clear() {
+        for (int i = 0; i < maxY; i++) {
+            for (int j = 0; j < maxX; j++) {
+                fieldValues[i][j] = false;
+            }
+        }
+    }
+
+    public boolean[] getLine(int row) {
+        boolean[] result = new boolean[maxX];
+        System.arraycopy(fieldValues[row], 0, result, 0, result.length);
+        return result;
+    }
+
+    public int getShipsNumber() {
+        return field.getShips().size();
+    }
+
+    /**
      * Checking if there any other ships close to that one you're trying to put.
      * Returns nothing except new exceptions for you to work with :)
      */
@@ -220,17 +224,17 @@ public class FieldService {
         // check current cell
         if (getCell(x, y)) throw new ShipPlacementException("Cell isn't empty");
 
-        if (x > 0) {                                                        // if we could move at left
-            if (y - 1 >= 0 && getCell(x - 1, y - 1)) throw e;        // check top-left cell
-            if (getCell(x - 1, y)) throw e;                          // check left cell
-            if (y + 1 < maxY && getCell(x - 1, y + 1)) throw e;      // check bottmo-left cell
+        if (x > 0) {                                                    // if we could move at left
+            if (y - 1 >= 0 && getCell(x - 1, y - 1)) throw e;       // check top-left cell
+            if (getCell(x - 1, y)) throw e;                         // check left cell
+            if (y + 1 < maxY && getCell(x - 1, y + 1)) throw e;     // check bottom-left cell
         }
         if (x < maxX) {                                                 // if we could go at right
-            if (y - 1 >= 0 && getCell(x + 1, y - 1)) throw e;        // check top-right cell
-            if (getCell(x + 1, y)) throw e;                          // check right cell
-            if (y + 1 < maxY && getCell(x + 1, y + 1)) throw e;      // check bottom-right cell
+            if (y - 1 >= 0 && getCell(x + 1, y - 1)) throw e;       // check top-right cell
+            if (getCell(x + 1, y)) throw e;                         // check right cell
+            if (y + 1 < maxY && getCell(x + 1, y + 1)) throw e;     // check bottom-right cell
         }
-        if (y - 1 >= 0 && getCell(x, y - 1)) throw e;                // check top cell
-        if (y + 1 < maxY && getCell(x, y + 1)) throw e;              // check bottom cell
+        if (y - 1 >= 0 && getCell(x, y - 1)) throw e;               // check top cell
+        if (y + 1 < maxY && getCell(x, y + 1)) throw e;             // check bottom cell
     }
 }
