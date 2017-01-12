@@ -22,8 +22,8 @@ public class ShipServiceTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
     private Ship ship;
-    private int startX = 0;
-    private int startY = 0;
+    private int startX = 1;
+    private int startY = 2;
     private int numberOfDecks = 4;
     private int endX = startX;
     private int endY = startY + numberOfDecks - 1;

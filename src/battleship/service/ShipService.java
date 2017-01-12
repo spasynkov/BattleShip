@@ -113,7 +113,7 @@ public class ShipService {
         int constantIndex;    // the same number for coordinates pair. X if ship is horizontal, or Y if it's not
         if (ship.isHorizontal()) {
             constantIndex = ship.getStartY();
-            for (int i = 0; i < ship.getStartX() + shipLength; i++) {
+            for (int i = ship.getStartX(); i < ship.getStartX() + shipLength; i++) {
                 result.add(new Coordinates(i, constantIndex));
             }
         } else {

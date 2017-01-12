@@ -22,12 +22,12 @@ public class TextUserInterface implements UserInterface {
     private Map<String, String> lang = new HashMap<>();
     // coordinates values
     // x coordinates should be of type char
-    private char[] xCoordinates = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
+    private char[] xCoordinatesNames = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
     // y coordinates should be of type int
-    private int[] yCoordinates = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    private int[] yCoordinatesNames = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-    private char emptyCellSign = '_';
-    private char missedCellSign = '.';
+    private char emptyCellSign = '.';
+    private char missedCellSign = '*';
     private char aliveShipCellSign = 'O';
     private char deadShipCellSign = 'X';
 
@@ -37,11 +37,11 @@ public class TextUserInterface implements UserInterface {
     }
 
     public void setXCoordinates(char[] xCoordinates) {
-        this.xCoordinates = xCoordinates;
+        this.xCoordinatesNames = xCoordinates;
     }
 
     public void setYCoordinates(int[] yCoordinates) {
-        this.yCoordinates = yCoordinates;
+        this.yCoordinatesNames = yCoordinates;
     }
 
     public void setCellsSigns(char emptyCellSign, char missedCellSign, char aliveShipCellSign, char deadShipCellSign) {
@@ -163,7 +163,7 @@ public class TextUserInterface implements UserInterface {
     @Override
     public void showEnemyMove(Coordinates coordinates) {
         System.out.print(
-                "Computer shoots at: " + xCoordinates[coordinates.getX()] + yCoordinates[coordinates.getY()] + "... ");
+                "Computer shoots at: " + xCoordinatesNames[coordinates.getX()] + yCoordinatesNames[coordinates.getY()] + "... ");
     }
 
     @Override
@@ -267,8 +267,8 @@ public class TextUserInterface implements UserInterface {
     }
 
     private int getCoordinateIndex(char coordinate) throws ShipPlacementException {
-        for (int i = 0; i < xCoordinates.length; i++) {
-            if (xCoordinates[i] == coordinate) {
+        for (int i = 0; i < xCoordinatesNames.length; i++) {
+            if (xCoordinatesNames[i] == coordinate) {
                 return i;
             }
         }
@@ -276,8 +276,8 @@ public class TextUserInterface implements UserInterface {
     }
 
     private int getCoordinateIndex(int coordinate) throws ShipPlacementException {
-        for (int i = 0; i < yCoordinates.length; i++) {
-            if (yCoordinates[i] == coordinate) {
+        for (int i = 0; i < yCoordinatesNames.length; i++) {
+            if (yCoordinatesNames[i] == coordinate) {
                 return i;
             }
         }
@@ -285,9 +285,9 @@ public class TextUserInterface implements UserInterface {
     }
 
     private boolean ifThereAreShipsAround(boolean[][] field, Coordinates coordinates) {
-        for (int i = coordinates.getY() - 1; i < coordinates.getY() + 1; i++) {
-            for (int j = coordinates.getX() - 1; j < coordinates.getX() + 1; j++) {
-                if (i >= 0 && j >= 0 && i < yCoordinates.length && j < xCoordinates.length) {
+        for (int i = coordinates.getY() - 1; i <= coordinates.getY() + 1; i++) {
+            for (int j = coordinates.getX() - 1; j <= coordinates.getX() + 1; j++) {
+                if (i >= 0 && j >= 0 && i < yCoordinatesNames.length && j < xCoordinatesNames.length) {
                     if (field[i][j]) return true;   // return true if there is a ship (boolean value is true)
                 }
             }
@@ -302,7 +302,7 @@ public class TextUserInterface implements UserInterface {
      */
     private String lineSeparator() {
         StringBuilder sb = new StringBuilder("    ");
-        for (int i = 0; i < xCoordinates.length; i++) {
+        for (int i = 0; i < xCoordinatesNames.length; i++) {
             sb.append("---");
         }
         return sb.toString();
@@ -315,7 +315,7 @@ public class TextUserInterface implements UserInterface {
      */
     private String columnsNames() {
         StringBuilder sb = new StringBuilder("   ");
-        for (char c : xCoordinates) {
+        for (char c : xCoordinatesNames) {
             sb.append("  ").append(c);
         }
         return sb.toString();
@@ -331,9 +331,9 @@ public class TextUserInterface implements UserInterface {
 
         int rowsNumberOfTheField = fieldValues.length;
         int columnsNumberOfTheField = fieldValues[0].length;
-        if (rowIndex < 9) System.out.print(" ");
+        if (rowIndex < 9) result.append(" ");
         // System.out.print(generateSpacesForLinesIndexDigit(rowIndex));
-        result.append(yCoordinates[rowIndex]).append(" |");
+        result.append(yCoordinatesNames[rowIndex]).append(" |");
         for (int j = 0; j < columnsNumberOfTheField; j++) {
             Coordinates currentCoordinates = new Coordinates(j, rowIndex);
             boolean cellValue = fieldValues[rowIndex][j];

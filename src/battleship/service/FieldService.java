@@ -229,7 +229,7 @@ public class FieldService {
             if (getCell(x - 1, y)) throw e;                         // check left cell
             if (y + 1 < maxY && getCell(x - 1, y + 1)) throw e;     // check bottom-left cell
         }
-        if (x < maxX) {                                                 // if we could go at right
+        if (x < maxX - 1) {                                                 // if we could go at right
             if (y - 1 >= 0 && getCell(x + 1, y - 1)) throw e;       // check top-right cell
             if (getCell(x + 1, y)) throw e;                         // check right cell
             if (y + 1 < maxY && getCell(x + 1, y + 1)) throw e;     // check bottom-right cell
