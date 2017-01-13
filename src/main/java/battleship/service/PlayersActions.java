@@ -34,7 +34,7 @@ public interface PlayersActions {
     /**
      * Makes a shoot at enemy's field
      *
-     * @param enemy particular {@link PlayersLogic} to shoot at
+     * @param enemy particular {@link PlayersLogicAbstractImpl} to shoot at
      */
     void makeShootAt(PlayersLogic enemy);
 

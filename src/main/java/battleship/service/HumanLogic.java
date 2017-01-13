@@ -12,7 +12,7 @@ import java.io.IOException;
  * Methods to be called while working with human user
  */
 // TODO: replace hardcoded log strings
-public class HumanLogic extends PlayersLogic {
+public class HumanLogic extends PlayersLogicAbstractImpl {
 
     private UserInterface userInterface;
 

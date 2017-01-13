@@ -6,14 +6,14 @@ import battleship.entities.PlayerStatistics;
 import battleship.service.FieldService;
 import battleship.service.HumanLogic;
 import battleship.service.MachineLogic;
-import battleship.service.PlayersLogic;
+import battleship.service.PlayersLogicAbstractImpl;
 import battleship.utils.BattleshipUtils;
 import battleship.utils.Logger;
 import battleship.views.TextUserInterface;
 
 import java.io.IOException;
 
-import static battleship.service.PlayersLogic.setLogger;
+import static battleship.service.PlayersLogicAbstractImpl.setLogger;
 
 /**
  * The loader of the game.
@@ -45,7 +45,7 @@ class GameLoader {
         utils.loadLanguage(args);
 
 
-        PlayersLogic.setUtils(utils);
+        PlayersLogicAbstractImpl.setUtils(utils);
 
         // creating players
         Player humanUser = new Player("User");

@@ -12,13 +12,13 @@ import java.util.Random;
  * This class contains methods for implementation some computer's logic in this game.
  */
 // TODO: remove hardcoded log strings
-public class MachineLogic extends PlayersLogic implements Runnable {
+public class MachineLogic extends PlayersLogicAbstractImpl implements Runnable {
     private static final Random random = new Random();
 
     private final Thread thisThread = new Thread(this, "Placing ships by computer");
 
     /**
-     * Calling {@link PlayersLogic}'s constructor
+     * Calling {@link PlayersLogicAbstractImpl}'s constructor
      *
      * @param player player to be used as a computer player
      */
@@ -103,7 +103,7 @@ public class MachineLogic extends PlayersLogic implements Runnable {
         boolean repeat;
         do {
             if (!isMoreShips()) break;
-            List<Pair<Integer, Integer>> cells = enemy.getFieldService().getEmptyCells();
+            List<Pair<Integer, Integer>> cells = enemy.getEmptyCells();
             Pair<Integer, Integer> coordinatesToShootAt = cells.get(random.nextInt(cells.size()));
             repeat = enemy.attackedAt(coordinatesToShootAt) != 0;
             player.addCoordinates(coordinatesToShootAt);

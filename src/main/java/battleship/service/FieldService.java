@@ -63,6 +63,10 @@ public class FieldService {
         return result;
     }
 
+    boolean[][] getFieldValues() {
+        return fieldValues;
+    }
+
     int hitShipAtField(Pair<Integer, Integer> coordinates) {
         if (fieldValues[coordinates.getValue()][coordinates.getKey()]) {
             // hit! lets check if if was the last deck of the ship

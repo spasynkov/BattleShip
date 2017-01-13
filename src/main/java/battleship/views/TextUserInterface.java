@@ -109,7 +109,7 @@ public class TextUserInterface implements UserInterface {
 
     @Override
     public void drawField(PlayersLogic player, boolean drawWithMarksAroundShips) {
-        boolean[][] field = player.getFieldService().getField().getFieldValues();
+        boolean[][] field = player.getFieldValues();
         int rowsNumberOfTheField = field.length;
 
         System.out.println(lineSeparator());
@@ -134,8 +134,8 @@ public class TextUserInterface implements UserInterface {
         // printing line separators
         System.out.println(lineSeparator() + spaceBetweenFields + " " + lineSeparator());
 
-        boolean[][] userField = user.getFieldService().getField().getFieldValues();
-        boolean[][] enemyField = enemy.getFieldService().getField().getFieldValues();
+        boolean[][] userField = user.getFieldValues();
+        boolean[][] enemyField = enemy.getFieldValues();
         int rowsNumberOfTheField = userField.length;
 
         // printing fields for each player line by line
