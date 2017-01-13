@@ -3,6 +3,7 @@ package battleship.views;
 import battleship.entities.Coordinates;
 import battleship.exceptions.ShipPlacementException;
 import battleship.service.PlayersLogic;
+import battleship.utils.BattleshipUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,14 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static battleship.utils.BattleshipUtils.closeStream;
-
-
 /**
  * This class is responsible for interaction with a user using console.
  */
 public class TextUserInterface implements UserInterface {
+
     private final BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+    private BattleshipUtils utils = new BattleshipUtils();
     private Map<String, String> lang = new HashMap<>();
     // coordinates values
     // x coordinates should be of type char
@@ -227,7 +227,7 @@ public class TextUserInterface implements UserInterface {
     }
 
     public void end() {
-        closeStream(consoleReader);
+        utils.closeStream(consoleReader);
     }
 
     private Coordinates readCoordinatesFromConsole() throws ShipPlacementException, IOException {

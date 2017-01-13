@@ -5,12 +5,13 @@ import battleship.entities.Player;
 import battleship.service.FieldService;
 import battleship.service.HumanLogic;
 import battleship.service.MachineLogic;
-import battleship.service.PlayersLogic;
 import battleship.utils.BattleshipUtils;
 import battleship.utils.Logger;
 import battleship.views.TextUserInterface;
 
 import java.io.IOException;
+
+import static battleship.service.PlayersLogic.setLogger;
 
 /**
  * The loader of the game.
@@ -22,7 +23,6 @@ import java.io.IOException;
 // todo: add statusbars
 // todo: add statistics (time + hits efficiency)
 // todo: add default properties opening
-// todo: add splitter's signs
 // todo: add other then ABCDEFGHIJ strings
 // todo: add different fields sizes and ships number
 // todo: incapsulate getCells
@@ -31,14 +31,16 @@ import java.io.IOException;
 // todo: int -> byte
 // TODO: fix javadocs
 class GameLoader {
+
     private static final Logger log = Logger.getInstance();
+    private static BattleshipUtils utils = new BattleshipUtils();
 
     public static void main(String[] args) {
         // setting logger
-        PlayersLogic.setLogger(log);
-        BattleshipUtils.setLogger(log);
-        BattleshipUtils.createDefaultLanguagePack();
-        BattleshipUtils.loadLanguage(args);
+        setLogger(log);
+        utils.setLogger(log);
+        utils.createDefaultLanguagePack();
+        utils.loadLanguage(args);
 
         // creating players
         Player humanUser = new Player("User");
@@ -67,7 +69,7 @@ class GameLoader {
         // creating user interface and injecting it in object that works with a human player
         TextUserInterface userInterface = new TextUserInterface();
         human.setUserInterface(userInterface);
-        userInterface.setLang(BattleshipUtils.getLANG());
+        userInterface.setLang(utils.getLANG());
 
         // starting the game
         userInterface.printWelcomeMessage();
@@ -140,6 +142,6 @@ class GameLoader {
         userInterface.end();
         log.write("Program finished.");
         log.write();
-        BattleshipUtils.closeStream(log);
+        utils.closeStream(log);
     }
 }

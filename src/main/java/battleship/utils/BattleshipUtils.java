@@ -10,19 +10,19 @@ import java.util.Properties;
  * This class contains methods used by other classes.
  */
 public class BattleshipUtils {
-    private static final Map<String, String> LANG = new HashMap<>();
+    private final Map<String, String> LANG = new HashMap<>();
 
-    private static Logger logger;
+    private Logger logger;
 
-    public static Map<String, String> getLANG() {
+    public Map<String, String> getLANG() {
         return LANG;
     }
 
-    public static void setLogger(Logger logger) {
-        BattleshipUtils.logger = logger;
+    public void setLogger(Logger logger) {
+        this.logger = logger;
     }
 
-    public static void createDefaultLanguagePack() {
+    public void createDefaultLanguagePack() {
         LANG.put("welcome text", "Welcome in this game!");
         LANG.put("Rules of placing ships", "The ships should be placed in a line horizontally or vertically with at least one cell between ships.\n" +
                 "Single-deck ships occupy one cell. There should be 4 single-deck ships, 3 double-deck ones (2 cells in a line),\n" +
@@ -58,7 +58,7 @@ public class BattleshipUtils {
         }
     }
 
-    public static void loadLanguage(String[] args) {
+    public void loadLanguage(String[] args) {
         String defaultLangCode = "_en"; // English by default
         String langCode = defaultLangCode;
         if (args != null) {
@@ -112,7 +112,7 @@ public class BattleshipUtils {
         }
     }
 
-    public static void closeStream(Closeable stream) {
+    public void closeStream(Closeable stream) {
         if (stream != null) {
             try {
                 stream.close();
