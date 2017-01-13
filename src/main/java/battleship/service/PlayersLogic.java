@@ -1,8 +1,8 @@
 package battleship.service;
 
-import battleship.ShipPlacementException;
 import battleship.entities.Coordinates;
 import battleship.entities.Player;
+import battleship.exceptions.ShipPlacementException;
 import battleship.utils.Logger;
 
 import java.util.Set;

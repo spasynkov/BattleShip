@@ -1,9 +1,9 @@
 package battleship.service;
 
-import battleship.ShipPlacementException;
 import battleship.entities.Coordinates;
 import battleship.entities.Field;
 import battleship.entities.Ship;
+import battleship.exceptions.ShipPlacementException;
 
 import java.util.ArrayList;
 import java.util.List;

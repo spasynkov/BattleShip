@@ -1,6 +1,6 @@
 package battleship.utils;
 
-import battleship.ShipPlacementException;
+import battleship.exceptions.ShipPlacementException;
 
 import java.io.BufferedWriter;
 import java.io.Closeable;

@@ -1,7 +1,7 @@
 package battleship.views;
 
-import battleship.ShipPlacementException;
 import battleship.entities.Coordinates;
+import battleship.exceptions.ShipPlacementException;
 import battleship.service.PlayersLogic;
 
 import java.io.IOException;
