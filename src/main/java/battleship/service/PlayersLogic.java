@@ -3,6 +3,7 @@ package battleship.service;
 import battleship.entities.Coordinates;
 import battleship.entities.Player;
 import battleship.exceptions.ShipPlacementException;
+import battleship.utils.BattleshipUtils;
 import battleship.utils.Logger;
 
 import java.util.Set;
@@ -10,10 +11,10 @@ import java.util.Set;
 /**
  * Abstract class that describes the logic of some player.
  */
-// TODO: replace hardcoded error message and logger string
 public abstract class PlayersLogic implements PlayersActions {
     static Logger logger;
     protected Player player;
+    private BattleshipUtils utils = new BattleshipUtils();
     private FieldService field;
     private int theLongestStreak = 0;
     private int theNumberOfMovesPlayerDid = 0;
@@ -42,9 +43,9 @@ public abstract class PlayersLogic implements PlayersActions {
         int fieldSize = field.getField().getMaxXFieldSize() * field.getField().getMaxYFieldSize();
         if (value > 0 && value < fieldSize) theLongestStreak = value;
         else {
-            NumberFormatException e =
-                    new NumberFormatException("Value \'" + value + "\' is out of range (<1 or >" + fieldSize + ").");
-            logger.write("New value of the longest streak is out of range.", e);
+            NumberFormatException e = new NumberFormatException(
+                    String.format(utils.getMessage("Value out of range exception"), value, fieldSize));
+            logger.write(utils.getMessage("Value out of range log"), e);
             throw e;
         }
     }

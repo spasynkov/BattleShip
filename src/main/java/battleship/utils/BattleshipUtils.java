@@ -18,6 +18,10 @@ public class BattleshipUtils {
         return LANG;
     }
 
+    public String getMessage(String key) {
+        return LANG.get(key);
+    }
+
     public void setLogger(Logger logger) {
         this.logger = logger;
     }
@@ -39,6 +43,8 @@ public class BattleshipUtils {
         LANG.put("Fields names1", "             Your field                         ");
         LANG.put("Fields names2", "\'s field");
         LANG.put("Game started", "Ok, game is starting right now!\n\n");
+        LANG.put("Value out of range exception", "Value \'%s\' is out of range (less than 1 or greater than %s).");
+        LANG.put("Value out of range log", "New value of the longest streak is out of range.");
 
         logger.write("Saving " + LANG.size() + " language strings in file...");
         Properties propertiesForSave = new Properties();
