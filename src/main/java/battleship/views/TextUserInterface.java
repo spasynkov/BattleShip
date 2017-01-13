@@ -48,7 +48,7 @@ public class TextUserInterface implements UserInterface {
     }
 
     public void printWelcomeMessage() {
-        System.out.println(utils.getMessage("welcome text"));
+        System.out.println(utils.getMessage("Welcome text"));
     }
 
     /**
@@ -57,11 +57,8 @@ public class TextUserInterface implements UserInterface {
      * @return {@link String} name for user
      */
     public String askForUserName() throws IOException {
-        // TODO replace hardcoded strings
-        String name;
-        System.out.print("Enter your name (or leave it blank): ");
-        name = consoleReader.readLine();
-        return name;
+        System.out.print(utils.getMessage("Ask for user name"));
+        return consoleReader.readLine();
     }
 
     /**
@@ -70,11 +67,8 @@ public class TextUserInterface implements UserInterface {
      * @return {@link String} name for computer
      */
     public String askForComputersName() throws IOException {
-        // TODO replace hardcoded strings
-        System.out.print("Enter opponent's name (or leave it blank): ");
-        String enemyName = consoleReader.readLine();
-        System.out.println("Ok.");
-        return enemyName;
+        System.out.print(utils.getMessage("Ask for enemy name"));
+        return consoleReader.readLine();
     }
 
     public void showRules() {
@@ -93,11 +87,9 @@ public class TextUserInterface implements UserInterface {
     @Override
     public Coordinates askForShipStartingCoordinate(int numberOfDecks) throws ShipPlacementException, IOException {
         String sNumberOfDecks = String.valueOf(numberOfDecks);
-        if (numberOfDecks == 1) sNumberOfDecks = "single-";
-
-        if (numberOfDecks != 1)
-            System.out.print(utils.getMessage("Ask for start point part1") + sNumberOfDecks + utils.getMessage("Ask for start point part2"));
-        else System.out.print(utils.getMessage("Ask for single-deck"));
+        if (numberOfDecks != 1) {
+            System.out.print(String.format(utils.getMessage("Ask for start point"), sNumberOfDecks));
+        } else System.out.print(utils.getMessage("Ask for single-deck"));
 
         return readCoordinatesFromConsole();
     }
@@ -105,9 +97,7 @@ public class TextUserInterface implements UserInterface {
     @Override
     public Coordinates askForShipEndingCoordinate(int numberOfDecks) throws ShipPlacementException, IOException {
         String sNumberOfDecks = String.valueOf(numberOfDecks);
-        if (numberOfDecks == 1) sNumberOfDecks = "single-";
-
-        System.out.print(utils.getMessage("Ask for end point part1") + sNumberOfDecks + utils.getMessage("Ask for end point part2"));
+        System.out.print(String.format(utils.getMessage("Ask for end point"), sNumberOfDecks));
 
         return readCoordinatesFromConsole();
     }
@@ -136,7 +126,9 @@ public class TextUserInterface implements UserInterface {
         String spaceBetweenFields = " ";
 
         // printing player's names
-        System.out.println(utils.getMessage("Fields names1") + enemy.getPlayerName() + utils.getMessage("Fields names2"));
+        System.out.println(utils.getMessage("Fields names1")
+                + enemy.getPlayerName()
+                + utils.getMessage("Fields names2"));
 
         // printing line separators
         System.out.println(lineSeparator() + spaceBetweenFields + " " + lineSeparator());
@@ -159,67 +151,69 @@ public class TextUserInterface implements UserInterface {
     @Override
     public void showEnemyMove(Coordinates coordinates) {
         System.out.print(
-                "Computer shoots at: " + xCoordinatesNames[coordinates.getX()] + yCoordinatesNames[coordinates.getY()] + "... ");
+                String.format(
+                        utils.getMessage("Enemt shoots"),
+                        xCoordinatesNames[coordinates.getX()] + yCoordinatesNames[coordinates.getY()]));
     }
 
     @Override
     public void enemyMissed(Coordinates coordinates) {
-        System.out.println("But it missed. Your turn.");
+        System.out.println(utils.getMessage("Enemy missed"));
     }
 
     @Override
     public void enemyInjuredYourShip(Coordinates coordinates) {
-        System.out.println("Computer hits your ship.");
+        System.out.println(utils.getMessage("Enemy hits"));
     }
 
     @Override
     public void enemyDestroyedYourShip(Coordinates coordinates) {
-        System.out.println("Computer killed your ship.");
+        System.out.println(utils.getMessage("Enemy kills"));
     }
 
     @Override
     public Coordinates askCoordinatesForShoot() throws ShipPlacementException, IOException {
-        System.out.print("Enter coordinates for shoot: ");
+        System.out.print(utils.getMessage("Ask for coordinates for shoot"));
         return readCoordinatesFromConsole();
     }
 
     @Override
     public void askToRepeatLastAction() {
-        System.out.println("Ooops... Something bad happened. Could you please repeat your last action?");
+        System.out.println(utils.getMessage("Abstract error"));
     }
 
     @Override
     public void suchShootHasBeenMadeAlready(Coordinates coordinates) {
-        System.out.println("You already shoot this cell!. Try another one.");
+        System.out.println(utils.getMessage("Repeated shoot"));
     }
 
     @Override
     public void userMissed(Coordinates coordinates) {
-        System.out.println("You missed. Computer's turn.");
+        System.out.println(utils.getMessage("You missed"));
     }
 
     @Override
     public void userInjuredEnemysShip(Coordinates coordinates) {
-        System.out.println("You hit computer's ship! Shoot again!");
+        System.out.println(utils.getMessage("You hit"));
     }
 
     @Override
     public void userDestroyedEnemysShip(Coordinates coordinates) {
-        System.out.println("Great! You've just killed computer's ship!");
+        System.out.println(utils.getMessage("You killed"));
     }
 
     public void won(int theLongestStreak, int theNumberOfMovesPlayerDid) {
-        // TODO replace hardcoded language strings
-        System.out.println("You won!");
-        System.out.println("You did it in " + theNumberOfMovesPlayerDid + " moves.");
-        System.out.println("The longest streak of successful hits you did is " + theLongestStreak + " hits.");
+        System.out.println(
+                String.format(
+                        utils.getMessage("You won"),
+                        theNumberOfMovesPlayerDid, theLongestStreak));
     }
 
     public void loose(String playerName, int theLongestStreak, int theNumberOfMovesPlayerDid) {
-        // TODO replace hardcoded language strings
-        System.out.println(playerName + " loose.");
-        System.out.println("You did only " + theNumberOfMovesPlayerDid + " moves.");
-        System.out.println("The longest streak of successful hits you did is " + theLongestStreak + " hits.");
+        System.out.println(
+                String.format(
+                        utils.getMessage("You loose"),
+                        playerName, theNumberOfMovesPlayerDid, theLongestStreak));
     }
 
     public void end() {
@@ -227,11 +221,16 @@ public class TextUserInterface implements UserInterface {
     }
 
     private Coordinates readCoordinatesFromConsole() throws ShipPlacementException, IOException {
+        String sCoordinates = "";
         Coordinates result;
         try {
-            result = getCoordinatesFromString(consoleReader.readLine());
+            sCoordinates = consoleReader.readLine();
+            result = getCoordinatesFromString(sCoordinates);
         } catch (ShipPlacementException e) {
-            System.out.println("Bad coordinates");
+            System.out.println(
+                    String.format(
+                            utils.getMessage("Bad coordinates"),
+                            sCoordinates, e.getMessage()));
             throw e;
         } catch (IOException e) {
             throw e;
@@ -248,7 +247,10 @@ public class TextUserInterface implements UserInterface {
      * Or will throw an exception if coordinates are extremely wrong.
      */
     private Coordinates getCoordinatesFromString(String sCoordinates) throws ShipPlacementException {
-        if (sCoordinates == null || sCoordinates.isEmpty()) throw new ShipPlacementException("Empty string");
+        if (sCoordinates == null || sCoordinates.isEmpty()) {
+            throw new ShipPlacementException(utils.getMessage("Empty string"));
+        }
+
         Coordinates result;
         if (sCoordinates.length() == 2 || sCoordinates.length() == 3) {
             try {
@@ -256,9 +258,9 @@ public class TextUserInterface implements UserInterface {
                 int second = Integer.parseInt(sCoordinates.substring(1));
                 result = new Coordinates(getCoordinateIndex(first), getCoordinateIndex(second));
             } catch (NumberFormatException e) {
-                throw new ShipPlacementException("Number format failed");
+                throw new ShipPlacementException(utils.getMessage("Number format failed"));
             }
-        } else throw new ShipPlacementException("String length is wrong");
+        } else throw new ShipPlacementException(utils.getMessage("String length is wrong"));
         return result;
     }
 
@@ -268,7 +270,7 @@ public class TextUserInterface implements UserInterface {
                 return i;
             }
         }
-        throw new ShipPlacementException("Coordinates are wrong or out of range");
+        throw new ShipPlacementException(utils.getMessage("Coordinates are wrong or out of range"));
     }
 
     private int getCoordinateIndex(int coordinate) throws ShipPlacementException {
@@ -277,7 +279,7 @@ public class TextUserInterface implements UserInterface {
                 return i;
             }
         }
-        throw new ShipPlacementException("Coordinates are wrong or out of range");
+        throw new ShipPlacementException(utils.getMessage("Coordinates are wrong or out of range"));
     }
 
     private boolean ifThereAreShipsAround(boolean[][] field, Coordinates coordinates) {
@@ -297,9 +299,11 @@ public class TextUserInterface implements UserInterface {
      * @return {@link String} of spaces and minuses that depends of the field's width
      */
     private String lineSeparator() {
-        StringBuilder sb = new StringBuilder("    ");
+        String spaces = "    ";
+        String delimiter = "---";
+        StringBuilder sb = new StringBuilder(spaces);
         for (char xCoordinatesName : xCoordinatesNames) {
-            sb.append("---");
+            sb.append(delimiter);
         }
         return sb.toString();
     }
@@ -310,9 +314,12 @@ public class TextUserInterface implements UserInterface {
      * @return {@link String} of spaces and column names
      */
     private String columnsNames() {
-        StringBuilder sb = new StringBuilder("   ");
+        String spaces = "  ";
+        String moreSpaces = "   ";
+        StringBuilder sb = new StringBuilder(moreSpaces);
+
         for (char c : xCoordinatesNames) {
-            sb.append("  ").append(c);
+            sb.append(spaces).append(c);
         }
         return sb.toString();
     }
@@ -325,39 +332,45 @@ public class TextUserInterface implements UserInterface {
 
         StringBuilder result = new StringBuilder();
 
+        String space = " ";
+        String leftDelimiter = " |";
+        String delimiter = "|";
+
         int rowsNumberOfTheField = fieldValues.length;
         int columnsNumberOfTheField = fieldValues[0].length;
-        if (rowIndex < 9) result.append(" ");
+        if (rowIndex < 9) result.append(space);
         // System.out.print(generateSpacesForLinesIndexDigit(rowIndex));
-        result.append(yCoordinatesNames[rowIndex]).append(" |");
+        result.append(yCoordinatesNames[rowIndex]).append(leftDelimiter);
         for (int j = 0; j < columnsNumberOfTheField; j++) {
             Coordinates currentCoordinates = new Coordinates(j, rowIndex);
             boolean cellValue = fieldValues[rowIndex][j];
             if (cellValue) {                                        // if this cell have a ship in it
                 if (shootsPlayerDid.contains(currentCoordinates)) {       // if we shoot here already
-                    result.append(" ").append(deadShipCellSign).append(" ");
+                    result.append(space).append(deadShipCellSign).append(space);
                 } else {                                            // if we didn't shoot in this cell yet
-                    result.append(" ").append(aliveShipCellSign).append(" ");
+                    result.append(space).append(aliveShipCellSign).append(space);
                 }
             } else {                                                // if this cell DON'T have a ship in it
                 if (shootsPlayerDid.contains(currentCoordinates)) {       // if we shoot here already
-                    result.append(" ").append(missedCellSign).append(" ");
+                    result.append(space).append(missedCellSign).append(space);
                 } else {                                            // if we didn't shoot in this cell yet
                     if (drawWithMarksAroundEveryShip && ifThereAreShipsAround(fieldValues, currentCoordinates)) {
                         // if need marks around every ship and there is a ship around of these coordinates
-                        result.append(" ").append(missedCellSign).append(" ");
+                        result.append(space).append(missedCellSign).append(space);
                     } else {    // otherwise
-                        result.append(" ").append(emptyCellSign).append(" ");
+                        result.append(space).append(emptyCellSign).append(space);
                     }
                 }
             }
         }
-        result.append("|");
+        result.append(delimiter);
         return result.toString();
     }
 
     private String generateSpacesForLinesIndexDigit(int rowIndex) {
         StringBuilder sb = new StringBuilder();
+        String space = " ";
+
         byte digit = 1;
         for (byte i = 1; i < 100; i++) {
             if (rowIndex < 1 * Math.pow(i, 10)) {
@@ -366,7 +379,7 @@ public class TextUserInterface implements UserInterface {
             }
         }
         for (int i = 0; i < digit; i++) {
-            sb.append(" ");
+            sb.append(space);
         }
         return sb.toString();
     }
