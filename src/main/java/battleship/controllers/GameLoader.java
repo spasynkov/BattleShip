@@ -5,6 +5,7 @@ import battleship.entities.Player;
 import battleship.service.FieldService;
 import battleship.service.HumanLogic;
 import battleship.service.MachineLogic;
+import battleship.service.PlayersLogic;
 import battleship.utils.BattleshipUtils;
 import battleship.utils.Logger;
 import battleship.views.TextUserInterface;
@@ -42,6 +43,9 @@ class GameLoader {
         utils.createDefaultLanguagePack();
         utils.loadLanguage(args);
 
+
+        PlayersLogic.setUtils(utils);
+
         // creating players
         Player humanUser = new Player("User");
         Player computer = new Player("Computer");
@@ -68,8 +72,8 @@ class GameLoader {
 
         // creating user interface and injecting it in object that works with a human player
         TextUserInterface userInterface = new TextUserInterface();
+        userInterface.setUtils(utils);
         human.setUserInterface(userInterface);
-        userInterface.setLang(utils.getLANG());
 
         // starting the game
         userInterface.printWelcomeMessage();

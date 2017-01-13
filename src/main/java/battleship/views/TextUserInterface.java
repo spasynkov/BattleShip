@@ -8,18 +8,14 @@ import battleship.utils.BattleshipUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 /**
  * This class is responsible for interaction with a user using console.
  */
 public class TextUserInterface implements UserInterface {
-
     private final BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
-    private BattleshipUtils utils = new BattleshipUtils();
-    private Map<String, String> lang = new HashMap<>();
+    private BattleshipUtils utils;
     // coordinates values
     // x coordinates should be of type char
     private char[] xCoordinatesNames = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
@@ -32,8 +28,8 @@ public class TextUserInterface implements UserInterface {
     private char deadShipCellSign = 'X';
 
     // setters
-    public void setLang(Map<String, String> lang) {
-        this.lang = lang;
+    public void setUtils(BattleshipUtils utils) {
+        this.utils = utils;
     }
 
     public void setXCoordinates(char[] xCoordinates) {
@@ -52,7 +48,7 @@ public class TextUserInterface implements UserInterface {
     }
 
     public void printWelcomeMessage() {
-        System.out.println(lang.get("welcome text"));
+        System.out.println(utils.getMessage("welcome text"));
     }
 
     /**
@@ -82,16 +78,16 @@ public class TextUserInterface implements UserInterface {
     }
 
     public void showRules() {
-        System.out.println(lang.get("Rules of placing ships"));
+        System.out.println(utils.getMessage("Rules of placing ships"));
     }
 
     @Override
     public void showInputFormat() {
-        System.out.println(lang.get("Show input format"));
+        System.out.println(utils.getMessage("Show input format"));
     }
 
     public void gameStarted() {
-        System.out.println(lang.get("Game started"));
+        System.out.println(utils.getMessage("Game started"));
     }
 
     @Override
@@ -100,8 +96,8 @@ public class TextUserInterface implements UserInterface {
         if (numberOfDecks == 1) sNumberOfDecks = "single-";
 
         if (numberOfDecks != 1)
-            System.out.print(lang.get("Ask for start point part1") + sNumberOfDecks + lang.get("Ask for start point part2"));
-        else System.out.print(lang.get("Ask for single-deck"));
+            System.out.print(utils.getMessage("Ask for start point part1") + sNumberOfDecks + utils.getMessage("Ask for start point part2"));
+        else System.out.print(utils.getMessage("Ask for single-deck"));
 
         return readCoordinatesFromConsole();
     }
@@ -111,13 +107,13 @@ public class TextUserInterface implements UserInterface {
         String sNumberOfDecks = String.valueOf(numberOfDecks);
         if (numberOfDecks == 1) sNumberOfDecks = "single-";
 
-        System.out.print(lang.get("Ask for end point part1") + sNumberOfDecks + lang.get("Ask for end point part2"));
+        System.out.print(utils.getMessage("Ask for end point part1") + sNumberOfDecks + utils.getMessage("Ask for end point part2"));
 
         return readCoordinatesFromConsole();
     }
 
     public void askToWait() {
-        System.out.println(lang.get("Wait for computer ships"));
+        System.out.println(utils.getMessage("Wait for computer ships"));
     }
 
     @Override
@@ -140,7 +136,7 @@ public class TextUserInterface implements UserInterface {
         String spaceBetweenFields = " ";
 
         // printing player's names
-        System.out.println(lang.get("Fields names1") + enemy.getPlayerName() + lang.get("Fields names2"));
+        System.out.println(utils.getMessage("Fields names1") + enemy.getPlayerName() + utils.getMessage("Fields names2"));
 
         // printing line separators
         System.out.println(lineSeparator() + spaceBetweenFields + " " + lineSeparator());
@@ -240,7 +236,7 @@ public class TextUserInterface implements UserInterface {
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
-            System.out.println(lang.get("Abstract error"));
+            System.out.println(utils.getMessage("Abstract error"));
             throw e;
         }
         return result;

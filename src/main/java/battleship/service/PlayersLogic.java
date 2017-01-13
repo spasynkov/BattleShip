@@ -13,8 +13,8 @@ import java.util.Set;
  */
 public abstract class PlayersLogic implements PlayersActions {
     static Logger logger;
+    private static BattleshipUtils utils;
     protected Player player;
-    private BattleshipUtils utils = new BattleshipUtils();
     private FieldService field;
     private int theLongestStreak = 0;
     private int theNumberOfMovesPlayerDid = 0;
@@ -25,6 +25,10 @@ public abstract class PlayersLogic implements PlayersActions {
 
     public static void setLogger(Logger logger) {
         PlayersLogic.logger = logger;
+    }
+
+    public static void setUtils(BattleshipUtils utils) {
+        PlayersLogic.utils = utils;
     }
 
     public Set<Coordinates> getPlayersShootsList() {
