@@ -15,7 +15,9 @@ import java.util.Date;
 public class Logger implements Closeable {
 
     // TODO get date format from properties
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEEE, d MMMM y HH:mm:ss ('GMT' XXX) : ");
+    private static String dateFormatPattern = "EEEE, d MMMM y HH:mm:ss ('GMT' XXX) : ";
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(dateFormatPattern);
+
     private static Logger instance = null;
     private static BufferedWriter writer = null;
 

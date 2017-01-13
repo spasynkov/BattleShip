@@ -14,12 +14,12 @@ public class BattleshipUtils {
 
     private Logger logger;
 
-    public Map<String, String> getLANG() {
-        return LANG;
-    }
-
     public String getMessage(String key) {
         return LANG.get(key);
+    }
+
+    public Map<String, String> getLANG() {
+        return LANG;
     }
 
     public void setLogger(Logger logger) {
