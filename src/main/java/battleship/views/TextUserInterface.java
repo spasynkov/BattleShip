@@ -1,6 +1,7 @@
 package battleship.views;
 
 import battleship.entities.Coordinates;
+import battleship.entities.PlayerStatistics;
 import battleship.exceptions.ShipPlacementException;
 import battleship.service.PlayersLogic;
 import battleship.utils.BattleshipUtils;
@@ -152,8 +153,8 @@ public class TextUserInterface implements UserInterface {
     public void showEnemyMove(Coordinates coordinates) {
         System.out.print(
                 String.format(
-                        utils.getMessage("Enemt shoots"),
-                        xCoordinatesNames[coordinates.getX()] + yCoordinatesNames[coordinates.getY()]));
+                        utils.getMessage("Enemy shoots"),
+                        xCoordinatesNames[coordinates.getX()], yCoordinatesNames[coordinates.getY()]));
     }
 
     @Override
@@ -202,18 +203,20 @@ public class TextUserInterface implements UserInterface {
         System.out.println(utils.getMessage("You killed"));
     }
 
-    public void won(int theLongestStreak, int theNumberOfMovesPlayerDid) {
+    @Override
+    public void won(PlayerStatistics userStats, PlayerStatistics enemyStats) {
         System.out.println(
                 String.format(
                         utils.getMessage("You won"),
-                        theNumberOfMovesPlayerDid, theLongestStreak));
+                        userStats.getTheNumberOfMoves(), userStats.getTheLongestStreak()));
     }
 
-    public void loose(String playerName, int theLongestStreak, int theNumberOfMovesPlayerDid) {
+    @Override
+    public void loose(PlayerStatistics userStats, PlayerStatistics enemyStats) {
         System.out.println(
                 String.format(
                         utils.getMessage("You loose"),
-                        playerName, theNumberOfMovesPlayerDid, theLongestStreak));
+                        userStats.getName(), userStats.getTheNumberOfMoves(), userStats.getTheLongestStreak()));
     }
 
     public void end() {

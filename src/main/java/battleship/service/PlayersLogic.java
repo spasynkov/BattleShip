@@ -2,6 +2,7 @@ package battleship.service;
 
 import battleship.entities.Coordinates;
 import battleship.entities.Player;
+import battleship.entities.PlayerStatistics;
 import battleship.exceptions.ShipPlacementException;
 import battleship.utils.BattleshipUtils;
 import battleship.utils.Logger;
@@ -15,12 +16,12 @@ public abstract class PlayersLogic implements PlayersActions {
     static Logger logger;
     private static BattleshipUtils utils;
     protected Player player;
+    PlayerStatistics stats;
     private FieldService field;
-    private int theLongestStreak = 0;
-    private int theNumberOfMovesPlayerDid = 0;
 
-    PlayersLogic(Player player) {
+    PlayersLogic(Player player, PlayerStatistics stats) {
         this.player = player;
+        this.stats = stats;
     }
 
     public static void setLogger(Logger logger) {
@@ -39,13 +40,9 @@ public abstract class PlayersLogic implements PlayersActions {
         return player.getName();
     }
 
-    public final int getTheLongestStreak() {
-        return theLongestStreak;
-    }
-
     void setTheLongestStreak(int value) throws NumberFormatException {
         int fieldSize = field.getField().getMaxXFieldSize() * field.getField().getMaxYFieldSize();
-        if (value > 0 && value < fieldSize) theLongestStreak = value;
+        if (value > 0 && value < fieldSize) stats.setTheLongestStreak(value);
         else {
             NumberFormatException e = new NumberFormatException(
                     String.format(utils.getMessage("Value out of range exception"), value, fieldSize));
@@ -54,12 +51,8 @@ public abstract class PlayersLogic implements PlayersActions {
         }
     }
 
-    public final int getTheNumberOfMovesPlayerDid() {
-        return theNumberOfMovesPlayerDid;
-    }
-
     void incrementTheNumberOfMovesPlayerDid() {
-        theNumberOfMovesPlayerDid++;
+        stats.setTheNumberOfMoves(stats.getTheNumberOfMoves() + 1);
     }
 
     final boolean putShipsAtField(Coordinates startingCoordinates, int numberOfDecks, Coordinates endingCoordinates)

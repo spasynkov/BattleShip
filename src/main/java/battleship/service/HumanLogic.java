@@ -2,6 +2,7 @@ package battleship.service;
 
 import battleship.entities.Coordinates;
 import battleship.entities.Player;
+import battleship.entities.PlayerStatistics;
 import battleship.exceptions.ShipPlacementException;
 import battleship.views.UserInterface;
 
@@ -15,8 +16,8 @@ public class HumanLogic extends PlayersLogic {
 
     private UserInterface userInterface;
 
-    public HumanLogic(Player player) {
-        super(player);
+    public HumanLogic(Player player, PlayerStatistics stats) {
+        super(player, stats);
     }
 
     public void setUserInterface(UserInterface userInterface) {
@@ -145,6 +146,6 @@ public class HumanLogic extends PlayersLogic {
                 }
             }
         } while (repeat != 0);
-        if (cycleCounter > getTheLongestStreak()) setTheLongestStreak(cycleCounter);
+        if (cycleCounter > stats.getTheLongestStreak()) setTheLongestStreak(cycleCounter);
     }
 }

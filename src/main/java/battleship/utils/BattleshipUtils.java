@@ -45,7 +45,7 @@ public class BattleshipUtils {
         lang.put("Game started", "Ok, game is starting right now!\n\n");
         lang.put("Value out of range exception", "Value \'%s\' is out of range (less than 1 or greater than %s).");
         lang.put("Value out of range log", "New value of the longest streak is out of range.");
-        lang.put("Enemy shoots", "Computer shoots at: %s...");
+        lang.put("Enemy shoots", "Computer shoots at: %s%s... ");
         lang.put("Enemy missed", "But it missed. Your turn.");
         lang.put("Enemy hits", "Computer hits your ship.");
         lang.put("Enemy kills", "Computer killed your ship.");

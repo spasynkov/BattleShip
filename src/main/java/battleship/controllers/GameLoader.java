@@ -2,6 +2,7 @@ package battleship.controllers;
 
 import battleship.entities.Field;
 import battleship.entities.Player;
+import battleship.entities.PlayerStatistics;
 import battleship.service.FieldService;
 import battleship.service.HumanLogic;
 import battleship.service.MachineLogic;
@@ -50,6 +51,11 @@ class GameLoader {
         Player humanUser = new Player("User");
         Player computer = new Player("Computer");
 
+        // creating statistics objects for players
+        PlayerStatistics userStats = new PlayerStatistics();
+        PlayerStatistics enemyStats = new PlayerStatistics();
+
+
         // TODO: get fields size and number of ships from properties
 
         // creating fields for every player
@@ -63,8 +69,8 @@ class GameLoader {
         FieldService computerFieldService = new FieldService(computersField);
 
         // creating roles
-        HumanLogic human = new HumanLogic(humanUser);
-        MachineLogic machine = new MachineLogic(computer);
+        HumanLogic human = new HumanLogic(humanUser, userStats);
+        MachineLogic machine = new MachineLogic(computer, enemyStats);
 
         // adding opportunity for roles to work with their fields
         human.setField(userFieldService);
@@ -81,18 +87,22 @@ class GameLoader {
 
         // asking user for names
         String newName;
-        try {       // asking for username
+        try {
+            // asking for username
             newName = userInterface.askForUserName();
-            if (!newName.isEmpty()) humanUser.setName(newName);
-        } catch (IOException e) {
-            log.write("Error while reading user's name.", e);
-        }
+            if (!newName.isEmpty()) {
+                humanUser.setName(newName);
+                userStats.setName(newName);
+            }
 
-        try {       // asking for computer's name
+            // asking for computer's name
             newName = userInterface.askForComputersName();
-            if (!newName.isEmpty()) computer.setName(newName);
+            if (!newName.isEmpty()) {
+                computer.setName(newName);
+                enemyStats.setName(newName);
+            }
         } catch (IOException e) {
-            log.write("Error while reading computer's name.", e);
+            log.write("Error while reading user's or enemy's name from console.", e);
         }
 
         // ships placement
@@ -129,19 +139,19 @@ class GameLoader {
 
         // game finished
         userInterface.drawAllFields(human, machine);
-        // preparing stats
-        String playerName = humanUser.getName();
-        int theNumberOfMovesPlayerDid = human.getTheNumberOfMovesPlayerDid();
-        int theLongestStreak = human.getTheLongestStreak();
+
+        // defining if user won or loose
         if (human.isMoreShips()) {
-            userInterface.won(theLongestStreak, theNumberOfMovesPlayerDid);
-            log.write("User \'" + playerName + "\' won. " +
-                    "User moves = " + theNumberOfMovesPlayerDid + ", the longest streak = " + theLongestStreak);
+            userInterface.won(userStats, enemyStats);
         } else {
-            userInterface.loose(playerName, theLongestStreak, theNumberOfMovesPlayerDid);
-            log.write("User \'" + playerName + "\' loose. " +
-                    "User moves = " + theNumberOfMovesPlayerDid + ", the longest streak = " + theLongestStreak);
+            userInterface.loose(userStats, enemyStats);
         }
+
+        log.write("User \'" + userStats.getName() + "\' " + (human.isMoreShips() ? "won" : "loose") + ". " +
+                "User moves = " + userStats.getTheNumberOfMoves() + ", " +
+                "the longest streak = " + userStats.getTheLongestStreak() +
+                "Enemy moves = " + enemyStats.getTheNumberOfMoves() + ", " +
+                "the longest streak = " + enemyStats.getTheLongestStreak());
 
         userInterface.end();
         log.write("Program finished.");

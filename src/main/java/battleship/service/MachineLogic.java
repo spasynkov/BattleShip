@@ -2,6 +2,7 @@ package battleship.service;
 
 import battleship.entities.Coordinates;
 import battleship.entities.Player;
+import battleship.entities.PlayerStatistics;
 import battleship.exceptions.ShipPlacementException;
 
 import java.util.List;
@@ -21,8 +22,8 @@ public class MachineLogic extends PlayersLogic implements Runnable {
      *
      * @param player player to be used as a computer player
      */
-    public MachineLogic(Player player) {
-        super(player);
+    public MachineLogic(Player player, PlayerStatistics stats) {
+        super(player, stats);
     }
 
     @Override

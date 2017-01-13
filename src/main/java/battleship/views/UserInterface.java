@@ -1,6 +1,7 @@
 package battleship.views;
 
 import battleship.entities.Coordinates;
+import battleship.entities.PlayerStatistics;
 import battleship.exceptions.ShipPlacementException;
 import battleship.service.PlayersLogic;
 
@@ -55,4 +56,8 @@ public interface UserInterface {
     void userInjuredEnemysShip(Coordinates coordinates);
 
     void userDestroyedEnemysShip(Coordinates coordinates);
+
+    void won(PlayerStatistics userStats, PlayerStatistics enemyStats);
+
+    void loose(PlayerStatistics userStats, PlayerStatistics enemyStats);
 }
