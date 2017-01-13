@@ -1,8 +1,8 @@
 package battleship.service;
 
-import battleship.entities.Coordinates;
 import battleship.entities.Ship;
 import battleship.exceptions.ShipPlacementException;
+import javafx.util.Pair;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -104,22 +104,22 @@ class ShipService {
     /**
      * Returns the full set of calculated coordinates that ship takes at the battlefield.
      * @param ship the ship for which to get it's coordinates
-     * @return {@link Set} of {@link Coordinates} this ships takes at player's field
+     * @return {@link Set} of {@link Pair} this ships takes at player's field
      */
-    static Set<Coordinates> getCoordinatesOfTheShip(Ship ship) {
+    static Set<Pair<Integer, Integer>> getCoordinatesOfTheShip(Ship ship) {
         int shipLength = ship.getLength();
-        Set<Coordinates> result = new HashSet<>(shipLength);
+        Set<Pair<Integer, Integer>> result = new HashSet<>(shipLength);
 
         int constantIndex;    // the same number for coordinates pair. X if ship is horizontal, or Y if it's not
         if (ship.isHorizontal()) {
             constantIndex = ship.getStartY();
             for (int i = ship.getStartX(); i < ship.getStartX() + shipLength; i++) {
-                result.add(new Coordinates(i, constantIndex));
+                result.add(new Pair<>(i, constantIndex));
             }
         } else {
             constantIndex = ship.getStartX();
             for (int i = ship.getStartY(); i < ship.getStartY() + shipLength; i++) {
-                result.add(new Coordinates(constantIndex, i));
+                result.add(new Pair<>(constantIndex, i));
             }
         }
         return result;

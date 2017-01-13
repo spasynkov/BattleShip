@@ -1,10 +1,10 @@
 package battleship.views;
 
-import battleship.entities.Coordinates;
 import battleship.entities.PlayerStatistics;
 import battleship.exceptions.ShipPlacementException;
 import battleship.service.PlayersLogic;
 import battleship.utils.BattleshipUtils;
+import javafx.util.Pair;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -86,7 +86,7 @@ public class TextUserInterface implements UserInterface {
     }
 
     @Override
-    public Coordinates askForShipStartingCoordinate(int numberOfDecks) throws ShipPlacementException, IOException {
+    public Pair<Integer, Integer> askForShipStartingCoordinate(int numberOfDecks) throws ShipPlacementException, IOException {
         String sNumberOfDecks = String.valueOf(numberOfDecks);
         if (numberOfDecks != 1) {
             System.out.print(String.format(utils.getMessage("Ask for start point"), sNumberOfDecks));
@@ -96,7 +96,7 @@ public class TextUserInterface implements UserInterface {
     }
 
     @Override
-    public Coordinates askForShipEndingCoordinate(int numberOfDecks) throws ShipPlacementException, IOException {
+    public Pair<Integer, Integer> askForShipEndingCoordinate(int numberOfDecks) throws ShipPlacementException, IOException {
         String sNumberOfDecks = String.valueOf(numberOfDecks);
         System.out.print(String.format(utils.getMessage("Ask for end point"), sNumberOfDecks));
 
@@ -150,30 +150,30 @@ public class TextUserInterface implements UserInterface {
     }
 
     @Override
-    public void showEnemyMove(Coordinates coordinates) {
+    public void showEnemyMove(Pair<Integer, Integer> coordinates) {
         System.out.print(
                 String.format(
                         utils.getMessage("Enemy shoots"),
-                        xCoordinatesNames[coordinates.getX()], yCoordinatesNames[coordinates.getY()]));
+                        xCoordinatesNames[coordinates.getKey()], yCoordinatesNames[coordinates.getValue()]));
     }
 
     @Override
-    public void enemyMissed(Coordinates coordinates) {
+    public void enemyMissed(Pair<Integer, Integer> coordinates) {
         System.out.println(utils.getMessage("Enemy missed"));
     }
 
     @Override
-    public void enemyInjuredYourShip(Coordinates coordinates) {
+    public void enemyInjuredYourShip(Pair<Integer, Integer> coordinates) {
         System.out.println(utils.getMessage("Enemy hits"));
     }
 
     @Override
-    public void enemyDestroyedYourShip(Coordinates coordinates) {
+    public void enemyDestroyedYourShip(Pair<Integer, Integer> coordinates) {
         System.out.println(utils.getMessage("Enemy kills"));
     }
 
     @Override
-    public Coordinates askCoordinatesForShoot() throws ShipPlacementException, IOException {
+    public Pair<Integer, Integer> askCoordinatesForShoot() throws ShipPlacementException, IOException {
         System.out.print(utils.getMessage("Ask for coordinates for shoot"));
         return readCoordinatesFromConsole();
     }
@@ -184,22 +184,22 @@ public class TextUserInterface implements UserInterface {
     }
 
     @Override
-    public void suchShootHasBeenMadeAlready(Coordinates coordinates) {
+    public void suchShootHasBeenMadeAlready(Pair<Integer, Integer> coordinates) {
         System.out.println(utils.getMessage("Repeated shoot"));
     }
 
     @Override
-    public void userMissed(Coordinates coordinates) {
+    public void userMissed(Pair<Integer, Integer> coordinates) {
         System.out.println(utils.getMessage("You missed"));
     }
 
     @Override
-    public void userInjuredEnemysShip(Coordinates coordinates) {
+    public void userInjuredEnemysShip(Pair<Integer, Integer> coordinates) {
         System.out.println(utils.getMessage("You hit"));
     }
 
     @Override
-    public void userDestroyedEnemysShip(Coordinates coordinates) {
+    public void userDestroyedEnemysShip(Pair<Integer, Integer> coordinates) {
         System.out.println(utils.getMessage("You killed"));
     }
 
@@ -223,9 +223,9 @@ public class TextUserInterface implements UserInterface {
         utils.closeStream(consoleReader);
     }
 
-    private Coordinates readCoordinatesFromConsole() throws ShipPlacementException, IOException {
+    private Pair<Integer, Integer> readCoordinatesFromConsole() throws ShipPlacementException, IOException {
         String sCoordinates = "";
-        Coordinates result;
+        Pair<Integer, Integer> result;
         try {
             sCoordinates = consoleReader.readLine();
             result = getCoordinatesFromString(sCoordinates);
@@ -249,17 +249,17 @@ public class TextUserInterface implements UserInterface {
      * (equals to "B4". horizontal: A->0, B->1, ...; vertical: 1->0, 2->1, ...)
      * Or will throw an exception if coordinates are extremely wrong.
      */
-    private Coordinates getCoordinatesFromString(String sCoordinates) throws ShipPlacementException {
+    private Pair<Integer, Integer> getCoordinatesFromString(String sCoordinates) throws ShipPlacementException {
         if (sCoordinates == null || sCoordinates.isEmpty()) {
             throw new ShipPlacementException(utils.getMessage("Empty string"));
         }
 
-        Coordinates result;
+        Pair<Integer, Integer> result;
         if (sCoordinates.length() == 2 || sCoordinates.length() == 3) {
             try {
                 char first = sCoordinates.toUpperCase().charAt(0);
                 int second = Integer.parseInt(sCoordinates.substring(1));
-                result = new Coordinates(getCoordinateIndex(first), getCoordinateIndex(second));
+                result = new Pair<>(getCoordinateIndex(first), getCoordinateIndex(second));
             } catch (NumberFormatException e) {
                 throw new ShipPlacementException(utils.getMessage("Number format failed"));
             }
@@ -285,9 +285,9 @@ public class TextUserInterface implements UserInterface {
         throw new ShipPlacementException(utils.getMessage("Coordinates are wrong or out of range"));
     }
 
-    private boolean ifThereAreShipsAround(boolean[][] field, Coordinates coordinates) {
-        for (int i = coordinates.getY() - 1; i <= coordinates.getY() + 1; i++) {
-            for (int j = coordinates.getX() - 1; j <= coordinates.getX() + 1; j++) {
+    private boolean ifThereAreShipsAround(boolean[][] field, Pair<Integer, Integer> coordinates) {
+        for (int i = coordinates.getValue() - 1; i <= coordinates.getValue() + 1; i++) {
+            for (int j = coordinates.getKey() - 1; j <= coordinates.getKey() + 1; j++) {
                 if (i >= 0 && j >= 0 && i < yCoordinatesNames.length && j < xCoordinatesNames.length) {
                     if (field[i][j]) return true;   // return true if there is a ship (boolean value is true)
                 }
@@ -330,7 +330,7 @@ public class TextUserInterface implements UserInterface {
     private String generateStringOfTheField(
             int rowIndex,
             boolean[][] fieldValues,
-            Set<Coordinates> shootsPlayerDid,
+            Set<Pair<Integer, Integer>> shootsPlayerDid,
             boolean drawWithMarksAroundEveryShip) {
 
         StringBuilder result = new StringBuilder();
@@ -345,7 +345,7 @@ public class TextUserInterface implements UserInterface {
         // System.out.print(generateSpacesForLinesIndexDigit(rowIndex));
         result.append(yCoordinatesNames[rowIndex]).append(leftDelimiter);
         for (int j = 0; j < columnsNumberOfTheField; j++) {
-            Coordinates currentCoordinates = new Coordinates(j, rowIndex);
+            Pair<Integer, Integer> currentCoordinates = new Pair<>(j, rowIndex);
             boolean cellValue = fieldValues[rowIndex][j];
             if (cellValue) {                                        // if this cell have a ship in it
                 if (shootsPlayerDid.contains(currentCoordinates)) {       // if we shoot here already

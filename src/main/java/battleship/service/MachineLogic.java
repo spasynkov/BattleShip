@@ -1,9 +1,9 @@
 package battleship.service;
 
-import battleship.entities.Coordinates;
 import battleship.entities.Player;
 import battleship.entities.PlayerStatistics;
 import battleship.exceptions.ShipPlacementException;
+import javafx.util.Pair;
 
 import java.util.List;
 import java.util.Random;
@@ -56,24 +56,24 @@ public class MachineLogic extends PlayersLogic implements Runnable {
     public void placeShipByDeckNumber(int numberOfDecks) {
         for (int i = numberOfDecks - 1; i < 4; i++) {   // for each ship of this type (with same number of decks)
             boolean flag = true;
-            Coordinates startingCoordinates;
-            Coordinates endingCoordinates = null;
+            Pair<Integer, Integer> startingCoordinates;
+            Pair<Integer, Integer> endingCoordinates = null;
             do {
                 int startX = random.nextInt(getFieldService().getField().getMaxXFieldSize());
                 int startY = random.nextInt(getFieldService().getField().getMaxYFieldSize());
-                startingCoordinates = new Coordinates(startX, startY);
+                startingCoordinates = new Pair<>(startX, startY);
                 int endX, endY;
                 boolean xDirection = random.nextBoolean();
                 if (numberOfDecks != 1) {
                     if (xDirection) {
                         endX = startX + numberOfDecks - 1;
                         endY = startY;
-                        endingCoordinates = new Coordinates(endX, endY);
+                        endingCoordinates = new Pair<>(endX, endY);
                     }
                     else {
                         endX = startX;
                         endY = startY + numberOfDecks - 1;
-                        endingCoordinates = new Coordinates(endX, endY);
+                        endingCoordinates = new Pair<>(endX, endY);
                     }
                 }
 
@@ -83,7 +83,7 @@ public class MachineLogic extends PlayersLogic implements Runnable {
                                 startingCoordinates,
                                 numberOfDecks,
                                 endingCoordinates);
-                    } else flag = !putShipsAtField(new Coordinates(startX, startY));
+                    } else flag = !putShipsAtField(new Pair<>(startX, startY));
                 } catch (ShipPlacementException e) {
                     // ok, we cant place ship here. let's try again
                 } catch (Exception e) {
@@ -103,8 +103,8 @@ public class MachineLogic extends PlayersLogic implements Runnable {
         boolean repeat;
         do {
             if (!isMoreShips()) break;
-            List<Coordinates> cells = enemy.getFieldService().getEmptyCells();
-            Coordinates coordinatesToShootAt = cells.get(random.nextInt(cells.size()));
+            List<Pair<Integer, Integer>> cells = enemy.getFieldService().getEmptyCells();
+            Pair<Integer, Integer> coordinatesToShootAt = cells.get(random.nextInt(cells.size()));
             repeat = enemy.attackedAt(coordinatesToShootAt) != 0;
             player.addCoordinates(coordinatesToShootAt);
             try {
@@ -116,7 +116,7 @@ public class MachineLogic extends PlayersLogic implements Runnable {
     }
 
     @Override
-    public int attackedAt(Coordinates coordinates) {
+    public int attackedAt(Pair<Integer, Integer> coordinates) {
         return checkDeckAtField(coordinates);
     }
 }

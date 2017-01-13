@@ -1,6 +1,6 @@
 package battleship.service;
 
-import battleship.entities.Coordinates;
+import javafx.util.Pair;
 
 /**
  * The main logic of every player in the game
@@ -29,7 +29,7 @@ public interface PlayersActions {
      * <b>2</b> - if there is last deck of a ship. The ship is completely destroyed now <i>(success)</i><br>
      * <b>-1</b> - if these coordinates were already attacked before
      */
-    int attackedAt(Coordinates coordinates);
+    int attackedAt(Pair<Integer, Integer> coordinates);
 
     /**
      * Makes a shoot at enemy's field

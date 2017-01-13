@@ -1,8 +1,8 @@
 package battleship.service;
 
-import battleship.entities.Coordinates;
 import battleship.entities.Ship;
 import battleship.exceptions.ShipPlacementException;
+import javafx.util.Pair;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -218,18 +218,18 @@ public class ShipServiceTest {
     @Test
     public void getCoordinatesOfTheShipWithOneDeckTest() throws Exception {
         ship = new Ship(startX, startY);
-        Set<Coordinates> actualListOfCoordinates = ShipService.getCoordinatesOfTheShip(ship);
+        Set<Pair<Integer, Integer>> actualListOfCoordinates = ShipService.getCoordinatesOfTheShip(ship);
         assertNotNull(actualListOfCoordinates);
         assertFalse(actualListOfCoordinates.contains(null));
 
-        Coordinates expectedCoordinates = new Coordinates(startX, startY);
+        Pair<Integer, Integer> expectedCoordinates = new Pair<>(startX, startY);
         assertTrue(actualListOfCoordinates.contains(expectedCoordinates));
 
         assertTrue(actualListOfCoordinates.size() == 1);
 
         // check if it contains some other values
-        Set<Coordinates> clone = new HashSet<>(actualListOfCoordinates);
-        Set<Coordinates> expectedListOfCoordinates = new HashSet<>();
+        Set<Pair<Integer, Integer>> clone = new HashSet<>(actualListOfCoordinates);
+        Set<Pair<Integer, Integer>> expectedListOfCoordinates = new HashSet<>();
         expectedListOfCoordinates.add(expectedCoordinates);
         assertFalse(actualListOfCoordinates.retainAll(expectedListOfCoordinates));
         assertEquals(clone, actualListOfCoordinates);
@@ -238,14 +238,14 @@ public class ShipServiceTest {
     @Test
     public void getCoordinatesOfTheHorizontalShipTest() throws Exception {
         ship = new Ship(startX, startY, numberOfDecks, true);   // lets create some horizontal ship
-        Set<Coordinates> actualListOfCoordinates = ShipService.getCoordinatesOfTheShip(ship);
+        Set<Pair<Integer, Integer>> actualListOfCoordinates = ShipService.getCoordinatesOfTheShip(ship);
         assertNotNull(actualListOfCoordinates);
         assertFalse(actualListOfCoordinates.contains(null));
 
         // creating list of coordinates
-        Set<Coordinates> expectedListOfCoordinates = new HashSet<>();
+        Set<Pair<Integer, Integer>> expectedListOfCoordinates = new HashSet<>();
         for (int i = 0; i < numberOfDecks; i++) {
-            expectedListOfCoordinates.add(new Coordinates(startX + i, startY));
+            expectedListOfCoordinates.add(new Pair<>(startX + i, startY));
         }
 
         assertTrue(actualListOfCoordinates.containsAll(expectedListOfCoordinates));
@@ -253,7 +253,7 @@ public class ShipServiceTest {
         assertTrue(actualListOfCoordinates.size() == numberOfDecks);
 
         // check if it contains some other values
-        Set<Coordinates> clone = new HashSet<>(actualListOfCoordinates);
+        Set<Pair<Integer, Integer>> clone = new HashSet<>(actualListOfCoordinates);
         assertFalse(actualListOfCoordinates.retainAll(expectedListOfCoordinates));
         assertEquals(clone, actualListOfCoordinates);
     }
@@ -261,14 +261,14 @@ public class ShipServiceTest {
     @Test
     public void getCoordinatesOfTheVerticalShipTest() throws Exception {
         ship = new Ship(startX, startY, numberOfDecks, false);  // lets create some vertical ship
-        Set<Coordinates> actualListOfCoordinates = ShipService.getCoordinatesOfTheShip(ship);
+        Set<Pair<Integer, Integer>> actualListOfCoordinates = ShipService.getCoordinatesOfTheShip(ship);
         assertNotNull(actualListOfCoordinates);
         assertFalse(actualListOfCoordinates.contains(null));
 
         // creating list of coordinates
-        Set<Coordinates> expectedListOfCoordinates = new HashSet<>();
+        Set<Pair<Integer, Integer>> expectedListOfCoordinates = new HashSet<>();
         for (int i = 0; i < numberOfDecks; i++) {
-            expectedListOfCoordinates.add(new Coordinates(startX, startY + i));
+            expectedListOfCoordinates.add(new Pair<>(startX, startY + i));
         }
 
         assertTrue(actualListOfCoordinates.containsAll(expectedListOfCoordinates));
@@ -276,7 +276,7 @@ public class ShipServiceTest {
         assertTrue(actualListOfCoordinates.size() == numberOfDecks);
 
         // check if it contains some other values
-        Set<Coordinates> clone = new HashSet<>(actualListOfCoordinates);
+        Set<Pair<Integer, Integer>> clone = new HashSet<>(actualListOfCoordinates);
         assertFalse(actualListOfCoordinates.retainAll(expectedListOfCoordinates));
         assertEquals(clone, actualListOfCoordinates);
     }

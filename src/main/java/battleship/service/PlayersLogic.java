@@ -1,11 +1,11 @@
 package battleship.service;
 
-import battleship.entities.Coordinates;
 import battleship.entities.Player;
 import battleship.entities.PlayerStatistics;
 import battleship.exceptions.ShipPlacementException;
 import battleship.utils.BattleshipUtils;
 import battleship.utils.Logger;
+import javafx.util.Pair;
 
 import java.util.Set;
 
@@ -32,7 +32,7 @@ public abstract class PlayersLogic implements PlayersActions {
         PlayersLogic.utils = utils;
     }
 
-    public Set<Coordinates> getPlayersShootsList() {
+    public Set<Pair<Integer, Integer>> getPlayersShootsList() {
         return player.getCoordinatesList();
     }
 
@@ -55,18 +55,18 @@ public abstract class PlayersLogic implements PlayersActions {
         stats.setTheNumberOfMoves(stats.getTheNumberOfMoves() + 1);
     }
 
-    final boolean putShipsAtField(Coordinates startingCoordinates, int numberOfDecks, Coordinates endingCoordinates)
+    final boolean putShipsAtField(Pair<Integer, Integer> startingCoordinates, int numberOfDecks, Pair<Integer, Integer> endingCoordinates)
             throws ShipPlacementException {
 
-        return field.putShip(startingCoordinates.getX(),
-                startingCoordinates.getY(),
+        return field.putShip(startingCoordinates.getKey(),
+                startingCoordinates.getValue(),
                 numberOfDecks,
-                endingCoordinates.getX(),
-                endingCoordinates.getY());
+                endingCoordinates.getKey(),
+                endingCoordinates.getValue());
     }
 
-    final boolean putShipsAtField(Coordinates coordinates) throws ShipPlacementException {
-        return field.putShip(coordinates.getX(), coordinates.getY());
+    final boolean putShipsAtField(Pair<Integer, Integer> coordinates) throws ShipPlacementException {
+        return field.putShip(coordinates.getKey(), coordinates.getValue());
     }
 
     public final boolean isMoreShips() {
@@ -81,7 +81,7 @@ public abstract class PlayersLogic implements PlayersActions {
         this.field = fieldService;
     }
 
-    final int checkDeckAtField(Coordinates coordinates) {
+    final int checkDeckAtField(Pair<Integer, Integer> coordinates) {
         return field.hitShipAtField(coordinates);
     }
 

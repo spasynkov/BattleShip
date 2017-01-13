@@ -1,10 +1,10 @@
 package battleship.service;
 
-import battleship.entities.Coordinates;
 import battleship.entities.Player;
 import battleship.entities.PlayerStatistics;
 import battleship.exceptions.ShipPlacementException;
 import battleship.views.UserInterface;
+import javafx.util.Pair;
 
 import java.io.IOException;
 
@@ -34,8 +34,8 @@ public class HumanLogic extends PlayersLogic {
     @Override
     public void placeShipByDeckNumber(int numberOfDecks) {
         for (int i = numberOfDecks - 1; i < 4; i++) {       // for each ship
-            Coordinates startingCoordinates = null;
-            Coordinates endingCoordinates = null;
+            Pair<Integer, Integer> startingCoordinates = null;
+            Pair<Integer, Integer> endingCoordinates = null;
             boolean shipPutFailed = true;
             do {
                 try {
@@ -66,7 +66,7 @@ public class HumanLogic extends PlayersLogic {
     }
 
     @Override
-    public int attackedAt(Coordinates coordinates) {
+    public int attackedAt(Pair<Integer, Integer> coordinates) {
         int result = checkDeckAtField(coordinates);
         userInterface.showEnemyMove(coordinates);
         logger.write("Enemy shoots at: " + coordinates + ".");
@@ -101,7 +101,7 @@ public class HumanLogic extends PlayersLogic {
         do {
             if (!enemy.isMoreShips()) break;
             cycleCounter++;
-            Coordinates coordinates = null;
+            Pair<Integer, Integer> coordinates = null;
             if (repeat != 0) {
                 userInterface.drawAllFields(this, enemy);
             }

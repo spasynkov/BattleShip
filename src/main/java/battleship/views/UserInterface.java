@@ -1,9 +1,9 @@
 package battleship.views;
 
-import battleship.entities.Coordinates;
 import battleship.entities.PlayerStatistics;
 import battleship.exceptions.ShipPlacementException;
 import battleship.service.PlayersLogic;
+import javafx.util.Pair;
 
 import java.io.IOException;
 
@@ -25,19 +25,19 @@ public interface UserInterface {
 
     void drawAllFields(PlayersLogic user, PlayersLogic enemy);
 
-    void showEnemyMove(Coordinates coordinates);
+    void showEnemyMove(Pair<Integer, Integer> coordinates);
 
-    void enemyMissed(Coordinates coordinates);
+    void enemyMissed(Pair<Integer, Integer> coordinates);
 
-    void enemyInjuredYourShip(Coordinates coordinates);
+    void enemyInjuredYourShip(Pair<Integer, Integer> coordinates);
 
-    void enemyDestroyedYourShip(Coordinates coordinates);
+    void enemyDestroyedYourShip(Pair<Integer, Integer> coordinates);
 
-    Coordinates askForShipStartingCoordinate(int numberOfDecks) throws ShipPlacementException, IOException;
+    Pair<Integer, Integer> askForShipStartingCoordinate(int numberOfDecks) throws ShipPlacementException, IOException;
 
-    Coordinates askForShipEndingCoordinate(int numberOfDecks) throws ShipPlacementException, IOException;
+    Pair<Integer, Integer> askForShipEndingCoordinate(int numberOfDecks) throws ShipPlacementException, IOException;
 
-    Coordinates askCoordinatesForShoot() throws ShipPlacementException, IOException;
+    Pair<Integer, Integer> askCoordinatesForShoot() throws ShipPlacementException, IOException;
 
     /**
      * If something bad happend - ask user to repeat his last action
@@ -49,13 +49,13 @@ public interface UserInterface {
      *
      * @param coordinates coordinates of the cell he shoots at
      */
-    void suchShootHasBeenMadeAlready(Coordinates coordinates);
+    void suchShootHasBeenMadeAlready(Pair<Integer, Integer> coordinates);
 
-    void userMissed(Coordinates coordinates);
+    void userMissed(Pair<Integer, Integer> coordinates);
 
-    void userInjuredEnemysShip(Coordinates coordinates);
+    void userInjuredEnemysShip(Pair<Integer, Integer> coordinates);
 
-    void userDestroyedEnemysShip(Coordinates coordinates);
+    void userDestroyedEnemysShip(Pair<Integer, Integer> coordinates);
 
     void won(PlayerStatistics userStats, PlayerStatistics enemyStats);
 

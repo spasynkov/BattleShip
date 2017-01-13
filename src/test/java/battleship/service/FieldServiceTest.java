@@ -1,7 +1,7 @@
 package battleship.service;
 
-import battleship.entities.Coordinates;
 import battleship.entities.Field;
+import javafx.util.Pair;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,17 +40,17 @@ public class FieldServiceTest {
     public void getCellTest() throws Exception {
         for (int y = 0; y < maxY; y++) {
             for (int x = 0; x < maxX; x++) {
-                // by Coordinates object
-                assertTrue(field.getFieldValues()[y][x] == fieldService.getCell(new Coordinates(x, y)));
+                // by Coordinates object (Pair<Integer, Integer>)
+                assertTrue(field.getFieldValues()[y][x] == fieldService.getCell(new Pair<>(x, y)));
                 // by pure coordinates values
                 assertTrue(field.getFieldValues()[y][x] == fieldService.getCell(x, y));
             }
         }
 
         assertFalse(fieldService.getCell(0, 0));
-        assertFalse(fieldService.getCell(new Coordinates(0, 0)));
+        assertFalse(fieldService.getCell(new Pair<>(0, 0)));
 
         assertTrue(fieldService.getCell(1, 1));
-        assertTrue(fieldService.getCell(new Coordinates(1, 1)));
+        assertTrue(fieldService.getCell(new Pair<>(1, 1)));
     }
 }

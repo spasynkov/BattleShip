@@ -1,9 +1,9 @@
 package battleship.service;
 
-import battleship.entities.Coordinates;
 import battleship.entities.Field;
 import battleship.entities.Ship;
 import battleship.exceptions.ShipPlacementException;
+import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,27 +44,27 @@ public class FieldService {
         }
     }
 
-    boolean getCell(Coordinates coordinates) {
-        return fieldValues[coordinates.getY()][coordinates.getX()];
+    boolean getCell(Pair<Integer, Integer> coordinates) {
+        return fieldValues[coordinates.getValue()][coordinates.getKey()];
     }
 
     boolean getCell(int x, int y) {
         return fieldValues[y][x];
     }
 
-    List<Coordinates> getEmptyCells() {
-        List<Coordinates> result = new ArrayList<>();
+    List<Pair<Integer, Integer>> getEmptyCells() {
+        List<Pair<Integer, Integer>> result = new ArrayList<>();
 
         for (int i = 0; i < maxY; i++) {
             for (int j = 0; j < maxX; j++) {
-                if (!fieldValues[i][j]) result.add(new Coordinates(j, i));
+                if (!fieldValues[i][j]) result.add(new Pair<>(j, i));
             }
         }
         return result;
     }
 
-    int hitShipAtField(Coordinates coordinates) {
-        if (fieldValues[coordinates.getY()][coordinates.getX()]) {
+    int hitShipAtField(Pair<Integer, Integer> coordinates) {
+        if (fieldValues[coordinates.getValue()][coordinates.getKey()]) {
             // hit! lets check if if was the last deck of the ship
             Ship ship = findShipByCoordinates(field.getShips(), coordinates);
             ShipService.hit(ship);  // boom!
@@ -88,9 +88,9 @@ public class FieldService {
      * @return link at {@link battleship.entities.Ship} we found,
      * or <code>null</code> if there are no ships with these coordinates
      */
-    private Ship findShipByCoordinates(List<Ship> ships, Coordinates coordinates) {
+    private Ship findShipByCoordinates(List<Ship> ships, Pair<Integer, Integer> coordinates) {
         for (Ship ship : ships) {
-            for (Coordinates shipCoordinates : ShipService.getCoordinatesOfTheShip(ship)) {
+            for (Pair<Integer, Integer> shipCoordinates : ShipService.getCoordinatesOfTheShip(ship)) {
                 if (shipCoordinates.equals(coordinates)) {
                     // we found this ship
                     return ship;
@@ -165,8 +165,8 @@ public class FieldService {
                 Math.max(startY, endY));
 
         // setting true values at the field at needed coordinates
-        for (Coordinates coordinates : ShipService.getCoordinatesOfTheShip(ship)) {
-            fieldValues[coordinates.getY()][coordinates.getX()] = true;
+        for (Pair<Integer, Integer> coordinates : ShipService.getCoordinatesOfTheShip(ship)) {
+            fieldValues[coordinates.getValue()][coordinates.getKey()] = true;
         }
         field.getShips().add(ship);     // ship added
 

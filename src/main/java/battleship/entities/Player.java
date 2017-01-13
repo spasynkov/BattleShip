@@ -1,5 +1,7 @@
 package battleship.entities;
 
+import javafx.util.Pair;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,7 +19,7 @@ public class Player {
     /**
      * The lists of coordinates player shoots at
      */
-    private Set<Coordinates> coordinatesList;
+    private Set<Pair<Integer, Integer>> coordinatesList;
 
     private Player() {
         name = "Player";
@@ -52,11 +54,11 @@ public class Player {
         this.field = field;
     }
 
-    public Set<Coordinates> getCoordinatesList() {
+    public Set<Pair<Integer, Integer>> getCoordinatesList() {
         return coordinatesList;
     }
 
-    public void addCoordinates(Coordinates coordinates) {
+    public void addCoordinates(Pair<Integer, Integer> coordinates) {
         if (coordinates != null) {
             coordinatesList.add(coordinates);
         }
