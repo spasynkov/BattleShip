@@ -44,15 +44,15 @@ public class FieldService {
         }
     }
 
-    public boolean getCell(Coordinates coordinates) {
+    boolean getCell(Coordinates coordinates) {
         return fieldValues[coordinates.getY()][coordinates.getX()];
     }
 
-    public boolean getCell(int x, int y) {
+    boolean getCell(int x, int y) {
         return fieldValues[y][x];
     }
 
-    public List<Coordinates> getEmptyCells() {
+    List<Coordinates> getEmptyCells() {
         List<Coordinates> result = new ArrayList<>();
 
         for (int i = 0; i < maxY; i++) {
@@ -63,7 +63,7 @@ public class FieldService {
         return result;
     }
 
-    public int hitShipAtField(Coordinates coordinates) {
+    int hitShipAtField(Coordinates coordinates) {
         if (fieldValues[coordinates.getY()][coordinates.getX()]) {
             // hit! lets check if if was the last deck of the ship
             Ship ship = findShipByCoordinates(field.getShips(), coordinates);
@@ -114,7 +114,7 @@ public class FieldService {
      * @return <code>true</code> if ship was created and put at field
      * @throws ShipPlacementException if coordinates are wrong or not valid
      */
-    public boolean putShip(int startX, int startY, int numberOfDecks, int endX, int endY)
+    boolean putShip(int startX, int startY, int numberOfDecks, int endX, int endY)
             throws ShipPlacementException {
 
         if (startX >= maxX || startY >= maxY || endX >= maxX || endY >= maxY ||
@@ -182,7 +182,7 @@ public class FieldService {
      * @return <code>true</code> if ship was created and put at field
      * @throws ShipPlacementException if coordinates are wrong or not valid
      */
-    public boolean putShip(int x, int y) throws ShipPlacementException {
+    boolean putShip(int x, int y) throws ShipPlacementException {
         // Checking if coordinates for this ship are not too close to other ships. If it is - exception would be thrown.
         checkIfCloseByXY(x, y);
 

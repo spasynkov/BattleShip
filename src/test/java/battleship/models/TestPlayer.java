@@ -1,4 +1,4 @@
-package models;
+package battleship.models;
 
 import battleship.entities.Player;
 import org.junit.After;

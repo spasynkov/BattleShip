@@ -1,8 +1,7 @@
-package service;
+package battleship.service;
 
 import battleship.entities.Coordinates;
 import battleship.entities.Field;
-import battleship.service.FieldService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 public class FieldServiceTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
-    Random random = new Random();
+    private Random random = new Random();
     private int maxX = 10;
     private int maxY = 10;
     private Field field = new Field(maxX, maxY, 10);

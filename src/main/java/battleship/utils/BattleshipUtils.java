@@ -85,9 +85,7 @@ public class BattleshipUtils {
             logger.write("Can't find " + file.getAbsolutePath() + " file. Trying to find default language pack...");
             langCode = defaultLangCode;
             file = new File("./language" + langCode);
-            if (file.exists() && !file.isDirectory()) {
-                fileExists = true;
-            } else {
+            if (!file.exists() || file.isDirectory()) {
                 logger.write("Can't load default language pack from " + file.getAbsolutePath() +
                         ". Generating file from available strings...");
                 createDefaultLanguagePack();   // If still not - create it from template

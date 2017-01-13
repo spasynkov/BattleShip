@@ -90,7 +90,7 @@ class GameLoader {
         }
 
         // ships placement
-        //machine.placeShips();
+        machine.placeShips();
         log.writeSynchronized("Asking user to place his ships.");
 
         userInterface.showRules();

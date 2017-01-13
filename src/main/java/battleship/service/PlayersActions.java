@@ -21,8 +21,7 @@ public interface PlayersActions {
     /**
      * This method calls when some other player attacks this player
      *
-     * @param x X coordinate at player's field
-     * @param y Y coordinate at player's field
+     * @param coordinates X and Y pair of coordinates at player's field
      * @return integer value as a result. It could be:<br>
      * <b>0</b> - if there is NO ship/deck by these coordinates <i>(miss)</i><br>
      * <b>1</b> - if there IS a deck by these coordinates,

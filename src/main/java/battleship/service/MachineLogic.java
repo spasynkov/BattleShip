@@ -55,7 +55,7 @@ public class MachineLogic extends PlayersLogic implements Runnable {
     public void placeShipByDeckNumber(int numberOfDecks) {
         for (int i = numberOfDecks - 1; i < 4; i++) {   // for each ship of this type (with same number of decks)
             boolean flag = true;
-            Coordinates startingCoordinates = null;
+            Coordinates startingCoordinates;
             Coordinates endingCoordinates = null;
             do {
                 int startX = random.nextInt(getFieldService().getField().getMaxXFieldSize());

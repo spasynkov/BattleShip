@@ -18,7 +18,7 @@ public abstract class PlayersLogic implements PlayersActions {
     private int theLongestStreak = 0;
     private int theNumberOfMovesPlayerDid = 0;
 
-    public PlayersLogic(Player player) {
+    PlayersLogic(Player player) {
         this.player = player;
     }
 

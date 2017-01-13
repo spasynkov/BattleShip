@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * Simple logic for calculating ship's stats
  */
-public class ShipService {
+class ShipService {
     /**
      * Creates the ship and return link at it
      *
@@ -19,7 +19,7 @@ public class ShipService {
      * @return the link for a particular {@link Ship} that just created
      * @throws ShipPlacementException if bad coordinates would be found
      */
-    public static Ship createShip(int startX, int startY) throws ShipPlacementException {
+    static Ship createShip(int startX, int startY) throws ShipPlacementException {
         checkCoordinates(startX, startY);
         return new Ship(startX, startY);
     }
@@ -35,7 +35,7 @@ public class ShipService {
      * @return the link for a particular {@link Ship} that just created
      * @throws ShipPlacementException if bad coordinates or number of decks would be found
      */
-    public static Ship createShip(int startX, int startY, int numberOfDecks, int endX, int endY)
+    static Ship createShip(int startX, int startY, int numberOfDecks, int endX, int endY)
             throws ShipPlacementException {
 
         if (numberOfDecks == 1 ||
@@ -86,7 +86,7 @@ public class ShipService {
     /**
      * Oh, shi..! We're in trouble now!
      */
-    public static void hit(Ship ship) throws RuntimeException {
+    static void hit(Ship ship) throws RuntimeException {
         int safeDecks = ship.getSafeDecks();
         if (safeDecks == 0) {
             throw new RuntimeException("No more alive decks left in this ship");
@@ -97,7 +97,7 @@ public class ShipService {
     /**
      * Checks if there are still some decks to gotShooted in
      */
-    public static boolean isShipAlive(Ship ship) {
+    static boolean isShipAlive(Ship ship) {
         return ship.getSafeDecks() > 0;
     }
 
@@ -106,7 +106,7 @@ public class ShipService {
      * @param ship the ship for which to get it's coordinates
      * @return {@link Set} of {@link Coordinates} this ships takes at player's field
      */
-    public static Set<Coordinates> getCoordinatesOfTheShip(Ship ship) {
+    static Set<Coordinates> getCoordinatesOfTheShip(Ship ship) {
         int shipLength = ship.getLength();
         Set<Coordinates> result = new HashSet<>(shipLength);
 

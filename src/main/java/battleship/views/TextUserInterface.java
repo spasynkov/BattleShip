@@ -62,7 +62,7 @@ public class TextUserInterface implements UserInterface {
      */
     public String askForUserName() throws IOException {
         // TODO replace hardcoded strings
-        String name = "";
+        String name;
         System.out.print("Enter your name (or leave it blank): ");
         name = consoleReader.readLine();
         return name;
@@ -143,7 +143,7 @@ public class TextUserInterface implements UserInterface {
         System.out.println(lang.get("Fields names1") + enemy.getPlayerName() + lang.get("Fields names2"));
 
         // printing line separators
-        System.out.println(lineSeparator() + spaceBetweenFields + lineSeparator());
+        System.out.println(lineSeparator() + spaceBetweenFields + " " + lineSeparator());
 
         boolean[][] userField = user.getFieldService().getField().getFieldValues();
         boolean[][] enemyField = enemy.getFieldService().getField().getFieldValues();
@@ -156,8 +156,8 @@ public class TextUserInterface implements UserInterface {
                     generateStringOfTheField(row, enemyField, user.getPlayersShootsList(), false));
         }
 
-        System.out.println(lineSeparator() + spaceBetweenFields + lineSeparator());
-        System.out.println(columnsNames() + spaceBetweenFields + columnsNames());
+        System.out.println(lineSeparator() + spaceBetweenFields + " " + lineSeparator());
+        System.out.println(columnsNames() + spaceBetweenFields + "  " + columnsNames());
     }
 
     @Override
@@ -231,7 +231,7 @@ public class TextUserInterface implements UserInterface {
     }
 
     private Coordinates readCoordinatesFromConsole() throws ShipPlacementException, IOException {
-        Coordinates result = null;
+        Coordinates result;
         try {
             result = getCoordinatesFromString(consoleReader.readLine());
         } catch (ShipPlacementException e) {
@@ -302,7 +302,7 @@ public class TextUserInterface implements UserInterface {
      */
     private String lineSeparator() {
         StringBuilder sb = new StringBuilder("    ");
-        for (int i = 0; i < xCoordinatesNames.length; i++) {
+        for (char xCoordinatesName : xCoordinatesNames) {
             sb.append("---");
         }
         return sb.toString();
